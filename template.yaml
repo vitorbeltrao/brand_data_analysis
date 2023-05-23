@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+# Define the resources to be created
+Resources:
+
+  # RDS PostgreSQL Database Instance
+  MyDBInstance:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      AllocatedStorage: 20
+      DBInstanceClass: db.t2.micro
+      Engine: postgres
+      EngineVersion: 11.10
+      MasterUsername: myuser
+      MasterUserPassword: mypassword
+      DBInstanceIdentifier: mydatabase
+      StorageType: gp2
+
+  # DMS Replication Instance
+  MyDMSInstance:
+    Type: 'AWS::DMS::ReplicationInstance'
+    Properties:
+      ReplicationInstanceIdentifier: mydmsinstance
+      ReplicationInstanceClass: dms.t2.micro
+      EngineVersion: 3.4.3
+      PubliclyAccessible: true
+
+  # S3 Bucket
+  MyS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: mybucket
+
+# Define outputs to retrieve useful information after stack creation
+Outputs:
+
+  # RDS Instance Endpoint
+  RDSInstanceEndpoint:
+    Value: !Sub '${MyDBInstance.Endpoint.Address}:${MyDBInstance.Endpoint.Port}'
+    Description: Endpoint address and port of the RDS instance
+
+  # DMS Instance Endpoint
+  DMSInstanceEndpoint:
+    Value: !GetAtt MyDMSInstance.Endpoint.Address
+    Description: Endpoint address of the DMS instance
+
+  # S3 Bucket Name
+  S3BucketName:
+    Value: !Ref MyS3Bucket
+    Description: Name of the S3 bucket
