@@ -7,44 +7,115 @@ Resources:
   MyDBInstance:
     Type: 'AWS::RDS::DBInstance'
     Properties:
-      AllocatedStorage: 20
-      DBInstanceClass: db.t2.micro
+      AllocatedStorage: '20'
+      DBInstanceClass: db.t3.micro # free tier
       Engine: postgres
-      EngineVersion: 11.10
-      MasterUsername: myuser
-      MasterUserPassword: mypassword
-      DBInstanceIdentifier: mydatabase
+      EngineVersion: '15.2'
+      MasterUsername: brand_data_storage
+      MasterUserPassword: '{{resolve:secretsmanager:mysecretpassword:SecretString:password}}' # Referencing the secret value
+      DBInstanceIdentifier: brand_data_db
       StorageType: gp2
+      MultiAZ: false
+      DBParameterGroupName: !Ref MyDBParameterGroup
+    
+  MyDBParameterGroup:
+    Type: 'AWS::RDS::DBParameterGroup'
+    Properties:
+      Family: postgres15
+      Description: My db parameter group
+      Parameters:
+        # Enable logical replication
+        rds.logical_replication: '1'
+
+        # Load shared libraries during database initialization
+        shared_preload_libraries: 'pg_stat_statements,pglogical'
 
   # DMS Replication Instance
   MyDMSInstance:
     Type: 'AWS::DMS::ReplicationInstance'
     Properties:
-      ReplicationInstanceIdentifier: mydmsinstance
-      ReplicationInstanceClass: dms.t2.micro
-      EngineVersion: 3.4.3
-      PubliclyAccessible: true
+      ReplicationInstanceIdentifier: brand_data_dms
+      ReplicationInstanceClass: dms.t2.micro # free tier
+      EngineVersion: 3.4.7
+      MultiAZ: false
+
+  # DMS Source Endpoint
+  MyDMSSourceEndpoint:
+    Type: 'AWS::DMS::Endpoint'
+    Properties:
+      EndpointIdentifier: my-dms-source-endpoint
+      EndpointType: source
+      EngineName: postgres
+      DatabaseName: brand_data_db
+      ServerName: !GetAtt MyDBInstance.Endpoint.Address
+      Port: !GetAtt MyDBInstance.Endpoint.Port
+      Username: brand_data_storage
+      Password: '{{resolve:secretsmanager:my-secrets:SecretString:password}}'
+      ExtraConnectionAttributes: 'PluginName=PGLOGICAL;'
+
+  # DMS Target Role
+  MyDMSTargetRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: my-dms-target-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: dms.amazonaws.com
+            Action: 'sts:AssumeRole'  
+      Policies:
+        - PolicyName: 'DMSAccessToS3'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:ListBucket'
+                  - 's3:GetObject'
+                  - 's3:PutObject'
+                  - 's3:GetBucketLocation'
+                  - 's3:DeleteObject'
+                Resource: 
+                  - !Sub 'arn:aws:s3:::${MyS3Bucket}/*'
+
+  # DMS Target Endpoint
+  MyDMSTargetEndpoint:
+    Type: 'AWS::DMS::Endpoint'
+    Properties:
+      EndpointIdentifier: my-dms-target-endpoint
+      EndpointType: target
+      EngineName: s3
+      BucketName: !Ref MyS3Bucket
 
   # S3 Bucket
   MyS3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: mybucket
+      BucketName: !Sub '${AWS::AccountId}-${AWS::StackName}'
 
-# Define outputs to retrieve useful information after stack creation
-Outputs:
-
-  # RDS Instance Endpoint
-  RDSInstanceEndpoint:
-    Value: !Sub '${MyDBInstance.Endpoint.Address}:${MyDBInstance.Endpoint.Port}'
-    Description: Endpoint address and port of the RDS instance
-
-  # DMS Instance Endpoint
-  DMSInstanceEndpoint:
-    Value: !GetAtt MyDMSInstance.Endpoint.Address
-    Description: Endpoint address of the DMS instance
-
-  # S3 Bucket Name
-  S3BucketName:
-    Value: !Ref MyS3Bucket
-    Description: Name of the S3 bucket
+  # DMS Replication Task
+  MyDMSTask:
+    Type: 'AWS::DMS::ReplicationTask'
+    Properties:
+      ReplicationTaskIdentifier: my-dms-task
+      MigrationType: full-load-and-cdc
+      SourceEndpointArn: !Ref MyDMSSourceEndpoint
+      TargetEndpointArn: !Ref MyDMSTargetEndpoint
+      ReplicationInstanceArn: !Ref MyDMSInstance
+      TableMappings: |
+        {
+          "rules": [
+            {
+              "rule-type": "selection",
+              "rule-id": "1",
+              "rule-name": "rule1",
+              "object-locator": {
+                "schema-name": "galo_tweets",
+                "table-name": "%"
+              },
+              "rule-action": "include"
+            }
+          ]
+        }
