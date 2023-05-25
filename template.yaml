@@ -3,17 +3,29 @@ AWSTemplateFormatVersion: '2010-09-09'
 # Define the resources to be created
 Resources:
 
+  MyDBSecret:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: MySecretForAppBrandData
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "test-user"}'
+        GenerateStringKey: "password"
+        PasswordLength: 30
+        ExcludeCharacters: '"@/\'
+
   # RDS PostgreSQL Database Instance
   MyDBInstance:
     Type: 'AWS::RDS::DBInstance'
+    DependsOn:
+      - MyDBSecret
     Properties:
       AllocatedStorage: '20'
       DBInstanceClass: db.t3.micro # free tier
       Engine: postgres
-      EngineVersion: '15.2'
+      EngineVersion: '14.7'
       MasterUsername: brand_data_storage
-      MasterUserPassword: '{{resolve:secretsmanager:mysecretpassword:SecretString:password}}' # Referencing the secret value
-      DBInstanceIdentifier: brand_data_db
+      MasterUserPassword: '{{resolve:secretsmanager:MySecretForAppBrandData:SecretString:password}}' # Referencing the secret value
+      DBInstanceIdentifier: brand-data-db
       StorageType: gp2
       MultiAZ: false
       DBParameterGroupName: !Ref MyDBParameterGroup
@@ -21,7 +33,7 @@ Resources:
   MyDBParameterGroup:
     Type: 'AWS::RDS::DBParameterGroup'
     Properties:
-      Family: postgres15
+      Family: postgres14
       Description: My db parameter group
       Parameters:
         # Enable logical replication
@@ -34,7 +46,6 @@ Resources:
   MyDMSInstance:
     Type: 'AWS::DMS::ReplicationInstance'
     Properties:
-      ReplicationInstanceIdentifier: brand_data_dms
       ReplicationInstanceClass: dms.t2.micro # free tier
       EngineVersion: 3.4.7
       MultiAZ: false
@@ -57,7 +68,6 @@ Resources:
   MyDMSTargetRole:
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: my-dms-target-role
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -71,14 +81,15 @@ Resources:
             Version: '2012-10-17'
             Statement:
               - Effect: Allow
-                Action:
-                  - 's3:ListBucket'
-                  - 's3:GetObject'
-                  - 's3:PutObject'
-                  - 's3:GetBucketLocation'
-                  - 's3:DeleteObject'
-                Resource: 
-                  - !Sub 'arn:aws:s3:::${MyS3Bucket}/*'
+                Action: '*'
+                Resource: '*'
+        - PolicyName: 'DMSAccessToRDS'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: '*'
+                Resource: '*'
 
   # DMS Target Endpoint
   MyDMSTargetEndpoint:
@@ -93,7 +104,7 @@ Resources:
   MyS3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: !Sub '${AWS::AccountId}-${AWS::StackName}'
+      BucketName: 'galo-brand-data-bucket'
 
   # DMS Replication Task
   MyDMSTask:
