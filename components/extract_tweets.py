@@ -3,7 +3,7 @@ Script to extract data from twitter
 and read them as pandas dataframe
 
 Author: Vitor Abdo
-Date: April/2023
+Date: May/2023
 '''
 
 # import necessay packages
