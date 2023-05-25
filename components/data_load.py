@@ -224,7 +224,7 @@ def insert_data_into_postgresql(
                 f'The columns of the DataFrame do not match the columns of the table {schema_name}.{table_name}')
 
         # Insert the data into the final table without overwriting existing data
-        insert_query = f'INSERT INTO {schema_name}.{table_name} SELECT * FROM {schema_name}.{temp_table_name} ON CONFLICT DO NOTHING;'
+        insert_query = f'INSERT INTO {schema_name}.{table_name} SELECT * FROM {schema_name}.{temp_table_name} ON CONFLICT (tweet_id) DO NOTHING;'
         with conn.cursor() as cur:
             cur.execute(insert_query)
         logging.info('The dataframe data has been inserted: SUCCESS')
