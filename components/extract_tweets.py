@@ -68,7 +68,7 @@ def get_tweets_from_user_for_today(api, user_id):
     tweet_data = []
 
     # Retrieve tweets from the specific user
-    tweets = api.user_timeline(user_id=user_id, tweet_mode="extended")
+    tweets = api.user_timeline(user_id=user_id, tweet_mode="extended", count=100)
 
     # Iterate over the tweets
     for tweet in tweets:
