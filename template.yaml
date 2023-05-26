@@ -103,8 +103,6 @@ Resources:
   # S3 Bucket
   MyS3Bucket:
     Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: 'galo-brand-data-bucket'
 
   # DMS Replication Task
   MyDMSTask:
