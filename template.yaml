@@ -2,16 +2,19 @@ AWSTemplateFormatVersion: '2010-09-09'
 
 # Define the resources to be created
 Resources:
+  # S3 Bucket
+  MyS3Bucket:
+    Type: 'AWS::S3::Bucket'
 
   MyDBSecret:
     Type: 'AWS::SecretsManager::Secret'
     Properties:
       Name: MySecretForAppBrandData
       GenerateSecretString:
-        SecretStringTemplate: '{"username": "test-user"}'
+        SecretStringTemplate: '{"username": "user_admin"}'
         GenerateStringKey: "password"
-        PasswordLength: 30
-        ExcludeCharacters: '"@/\'
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\;+%'
 
   # RDS PostgreSQL Database Instance
   MyDBInstance:
@@ -23,7 +26,7 @@ Resources:
       DBInstanceClass: db.t3.micro # free tier
       Engine: postgres
       EngineVersion: '14.7'
-      MasterUsername: brand_data_storage
+      MasterUsername: '{{resolve:secretsmanager:MySecretForAppBrandData:SecretString:username}}'
       MasterUserPassword: '{{resolve:secretsmanager:MySecretForAppBrandData:SecretString:password}}' # Referencing the secret value
       DBInstanceIdentifier: brand-data-db
       StorageType: gp2
@@ -60,8 +63,8 @@ Resources:
       DatabaseName: brand_data_db
       ServerName: !GetAtt MyDBInstance.Endpoint.Address
       Port: !GetAtt MyDBInstance.Endpoint.Port
-      Username: brand_data_storage
-      Password: '{{resolve:secretsmanager:my-secrets:SecretString:password}}'
+      Username: '{{resolve:secretsmanager:MySecretForAppBrandData:SecretString:username}}'
+      Password: '{{resolve:secretsmanager:MySecretForAppBrandData:SecretString:password}}'
       ExtraConnectionAttributes: 'PluginName=PGLOGICAL;'
 
   # DMS Target Role
@@ -95,14 +98,12 @@ Resources:
   MyDMSTargetEndpoint:
     Type: 'AWS::DMS::Endpoint'
     Properties:
-      EndpointIdentifier: my-dms-target-endpoint
       EndpointType: target
       EngineName: s3
-      BucketName: !Ref MyS3Bucket
-
-  # S3 Bucket
-  MyS3Bucket:
-    Type: 'AWS::S3::Bucket'
+      S3Settings:
+        BucketFolder: brand-data
+        BucketName: !Ref MyS3Bucket
+        ServiceAccessRoleArn: !GetAtt MyDMSTargetRole.Arn
 
   # DMS Replication Task
   MyDMSTask:
