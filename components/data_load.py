@@ -19,15 +19,19 @@ logging.basicConfig(
 
 
 def create_schema_into_postgresql(
-        host_name: str,
+        endpoint_name: str,
+        port: int,
         db_name: str,
         user_name: str,
         password: str,
         schema_name: str) -> None:
-    '''Connects to a PostgreSQL database and creates a schema if it does not already exist
+    '''Connects to a PostgreSQL database on Amazon RDS and creates a schema if it does not already exist
 
-    :param host_name: (str)
-    Is the network name for the physical machine on which the node is installed
+    :param endpoint_name: (str)
+    The endpoint URL of your Amazon RDS instance
+
+    :param port: (int)
+    The port number to connect to the database
 
     :param db_name: (str)
     The name of the database to connect to
@@ -44,7 +48,8 @@ def create_schema_into_postgresql(
 
     # Set up the connection
     conn = psycopg2.connect(
-        host=host_name,
+        host=endpoint_name,
+        port=port,
         database=db_name,
         user=user_name,
         password=password
@@ -72,8 +77,8 @@ def create_schema_into_postgresql(
 
 
 def create_table_into_postgresql(
-        host_name: str,
-        port: str,
+        endpoint_name: str,
+        port: int,
         db_name: str,
         user_name: str,
         password: str,
@@ -82,11 +87,11 @@ def create_table_into_postgresql(
         table_columns: str) -> None:
     '''Function that creates a table if it does not exist in a PostgresSQL schema
 
-    :param host_name: (str)
-    Is the network name for the physical machine on which the node is installed
+    :param endpoint_name: (str)
+    The endpoint URL of your Amazon RDS instance
 
-    :param port: (str)
-    Default port used for the protocol
+    :param port: (int)
+    The port number to connect to the database
 
     :param db_name: (str)
     The name of the database to connect to
@@ -108,11 +113,11 @@ def create_table_into_postgresql(
     '''
     # Connection to the PostgresSQL database
     conn = psycopg2.connect(
-        host=host_name,
+        host=endpoint_name,
+        port=port,
         database=db_name,
         user=user_name,
         password=password,
-        port=port
     )
 
     # Creation of a cursor to execute SQL commands
@@ -141,8 +146,8 @@ def create_table_into_postgresql(
 
 
 def insert_data_into_postgresql(
-        host_name: str,
-        port: str,
+        endpoint_name: str,
+        port: int,
         datab_name: str,
         user_name: str,
         password: str,
@@ -153,13 +158,13 @@ def insert_data_into_postgresql(
     Function that inserts data from a Pandas DataFrame into a PostgreSQL table.
     If the table does not exist, it creates a new one in the specified schema.
 
-    :param host_name: (str)
-    Is the network name for the physical machine on which the node is installed
+    :param endpoint_name: (str)
+    The endpoint URL of your Amazon RDS instance
 
-    :param port: (str)
-    Default port used for the protocol
+    :param port: (int)
+    The port number to connect to the database
 
-    :param datab_name: (str)
+    :param db_name: (str)
     The name of the database to connect to.
 
     :param user_name: (str)
@@ -179,7 +184,7 @@ def insert_data_into_postgresql(
     '''
 
     # Connect to the PostgreSQL database
-    db_host = host_name
+    db_host = endpoint_name
     db_port = port
     db_name = datab_name
     db_user = user_name
