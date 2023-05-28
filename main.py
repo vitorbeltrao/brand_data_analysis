@@ -42,13 +42,14 @@ PORT = config('PORT')
 DB_NAME = config('DB_NAME')
 USER = config('USER')
 PASSWORD = config('PASSWORD')
-SCHEMA_TO_CREATE = config('SCHEMAS_TO_CREATE')
+SCHEMA_TO_CREATE = config('SCHEMA_TO_CREATE')
+TABLE_NAME = config('TABLE_NAME')
 
 
 if __name__ == "__main__":
     # 1. create the schema if it does not already exist
     logging.info('About to start executing the create schema function')
-    create_schema_into_postgresql(ENDPOINT_NAME, DB_NAME, USER, PASSWORD, SCHEMA_TO_CREATE)
+    create_schema_into_postgresql(ENDPOINT_NAME, PORT, DB_NAME, USER, PASSWORD, SCHEMA_TO_CREATE)
     logging.info('Done executing the create schema function\n')
 
     # 2. create tables
@@ -56,13 +57,13 @@ if __name__ == "__main__":
     logging.info(
         'About to start executing the create table "official_page_tweets" function')
     table_columns = '''
-    tweet_id VARCHAR(50),
+    tweet_id TEXT,
     created_at TIMESTAMP,
     text TEXT,
     likes INT,
     retweets INT,
     id SERIAL PRIMARY KEY,
-    created_at TIMESTAMP,
+    ran_at TIMESTAMP,
     updated_at TIMESTAMP
     '''
 
@@ -87,8 +88,7 @@ if __name__ == "__main__":
     raw_df = get_tweets_from_user_for_today(api_connect, OFFICIAL_TWITTER_USER_ID)
 
     # transforming data
-    transformed_df = create_auxiliary_columns(
-        raw_df) # creating the id, created_at and updated_at columns
+    create_auxiliary_columns(raw_df) # creating the id, ran_at and updated_at columns
 
     # loading data
     insert_data_into_postgresql(
@@ -98,7 +98,7 @@ if __name__ == "__main__":
         USER,
         PASSWORD,
         SCHEMA_TO_CREATE,
-        'official_page_tweets',
-        transformed_df)
+        TABLE_NAME,
+        raw_df)
     logging.info(
         'Done executing inserting the data into official_page_tweets table\n')

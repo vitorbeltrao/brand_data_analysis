@@ -133,6 +133,11 @@ def create_table_into_postgresql(
     if not exists:
         create_table_query = f'CREATE TABLE {schema_name}.{table_name} ({table_columns})'
         cur.execute(create_table_query)
+
+        unique_constraint_query = f'''
+        ALTER TABLE {schema_name}.{table_name} ADD CONSTRAINT unique_tweet_id UNIQUE (tweet_id);'''
+        cur.execute(unique_constraint_query)
+        
         logging.info(
             f'The table {table_name} was created in the {schema_name} schema')
     else:
@@ -147,7 +152,7 @@ def create_table_into_postgresql(
 
 def insert_data_into_postgresql(
         endpoint_name: str,
-        port: int,
+        port: str,
         datab_name: str,
         user_name: str,
         password: str,

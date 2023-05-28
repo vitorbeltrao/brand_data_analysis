@@ -19,7 +19,7 @@ logging.basicConfig(
 
 def create_auxiliary_columns(transformed_df: pd.DataFrame) -> None:
     '''Function to create three auxiliary columns in datasets:
-    "id", "created_at" and "updated_at"
+    "id", "ran_at" and "updated_at"
 
     :param transformed_df: (dataframe)
     Dataframe after all transformations just
@@ -30,7 +30,7 @@ def create_auxiliary_columns(transformed_df: pd.DataFrame) -> None:
     logging.info(f'Column "id" was inserted: SUCCESS')
 
     # inserting the "created_at" and "updated_at" column
-    transformed_df['created_at'] = dt.datetime.now()
-    transformed_df['updated_at'] = transformed_df['created_at']
+    transformed_df['ran_at'] = dt.datetime.now()
+    transformed_df['updated_at'] = transformed_df['ran_at']
     logging.info(
-        'Columns "created_at" and "updated_at" was inserted: SUCCESS')
+        'Columns "ran_at" and "updated_at" was inserted: SUCCESS')
