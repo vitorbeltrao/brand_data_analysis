@@ -8,8 +8,14 @@ Date: May/2023
 
 # import necessay packages
 import datetime
+import logging
 import pandas as pd
 import tweepy as tw
+
+logging.basicConfig(
+    level=logging.INFO,
+    filemode='w',
+    format='%(name)s - %(levelname)s - %(message)s')
 
 
 def connect_twitter_api(
@@ -40,8 +46,10 @@ def connect_twitter_api(
     client = tw.Client(bearer_token=bearer_token)
     # Create an instance of the Twitter API using the authorization object
     api = tw.API(permission)
+    logging.info(
+        'Twitter API instance using authorization object was created successfully')
 
-    return api, client
+    return api
 
     # Now you can use the "api" variable to make API calls to Twitter and
     # perform operations like getting tweets, sending tweets, etc.
@@ -69,6 +77,7 @@ def get_tweets_from_user_for_today(api, user_id):
 
     # Retrieve tweets from the specific user
     tweets = api.user_timeline(user_id=user_id, tweet_mode="extended", count=100)
+    logging.info('The tweets have been retrieved: SUCCESS')
 
     # Iterate over the tweets
     for tweet in tweets:
@@ -83,6 +92,7 @@ def get_tweets_from_user_for_today(api, user_id):
 
             # Append the tweet data to the list
             tweet_data.append((tweet_id, created_at, text, likes, retweets))
+    logging.info('Tweets have been inserted into a list: SUCCESS')
 
     # Create a DataFrame from the tweet data
     df_tweets = pd.DataFrame(
@@ -93,5 +103,6 @@ def get_tweets_from_user_for_today(api, user_id):
             'text',
             'likes',
             'retweets'])
+    logging.info('The final dataframe was created: SUCCESS')
 
     return df_tweets
