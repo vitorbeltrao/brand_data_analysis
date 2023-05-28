@@ -33,4 +33,4 @@ def create_auxiliary_columns(transformed_df: pd.DataFrame) -> None:
     transformed_df['created_at'] = dt.datetime.now()
     transformed_df['updated_at'] = transformed_df['created_at']
     logging.info(
-        f'Columns "created_at" and "updated_at" was inserted: SUCCESS')
+        'Columns "created_at" and "updated_at" was inserted: SUCCESS')
