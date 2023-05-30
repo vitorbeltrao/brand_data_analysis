@@ -60,7 +60,7 @@ Resources:
       EndpointIdentifier: my-dms-source-endpoint
       EndpointType: source
       EngineName: postgres
-      DatabaseName: brand_data_db
+      DatabaseName: postgres
       ServerName: !GetAtt MyDBInstance.Endpoint.Address
       Port: !GetAtt MyDBInstance.Endpoint.Port
       Username: '{{resolve:secretsmanager:MySecretForAppBrandData:SecretString:username}}'
