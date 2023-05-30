@@ -10,70 +10,70 @@ Date: May/2023
 import boto3
 import logging
 import datetime
+from decouple import config
 
 logging.basicConfig(
     level=logging.INFO,
     filemode='w',
     format='%(name)s - %(levelname)s - %(message)s')
 
+# config
+BUCKET_NAME = config('BUCKET_NAME')
+SOURCE_DIRECTORY = config('SOURCE_DIRECTORY')
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+REGION_NAME = config('REGION_NAME')
 
-def move_files_to_raw_folder(bucket_name: str, source_folder: str) -> None:
+
+def move_files_to_daily_directory(
+        bucket_name: str, 
+        source_directory: str, 
+        aws_access_key_id: str, 
+        aws_secret_access_key: str, 
+        region_name: str) -> None:
     '''
-    Moves files from the current date's folder in the source folder to a new "raw" folder.
+    Move files from the original directory to a daily directory in Amazon S3.
 
-    If the "raw" folder doesn't exist, it will be created. If the "raw" folder already exists,
-    the files will be copied to the existing folder.
-
-    :param bucket_name: The name of the Amazon S3 bucket.
-    :param source_folder: The name of the source folder where the files are located.
+    :param bucket_name: (str) Name of the S3 bucket.
+    :param source_directory: (str) Path of the source directory containing the files to be moved.
+    :param aws_access_key_id: (str) AWS access key ID.
+    :param aws_secret_access_key: (str) AWS secret access key.
+    :param region_name: (str) AWS region name.
     '''
-    # Create an S3 client
-    s3_client = boto3.client('s3')
+    # Create a session with AWS credentials
+    session = boto3.Session(
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key,
+        region_name=region_name
+    )
 
-    # Get the current date
-    current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+    # Create a client instance for S3
+    s3_client = session.client('s3')
 
-    # Check if the "raw" folder exists
-    raw_folder_prefix = f'{source_folder}/raw/{current_date}/'
-    response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=raw_folder_prefix)
-    raw_folder_exists = 'Contents' in response
+    # Get the file name from the source directory path
+    file_name = source_directory.split('/')[-1]
 
-    if not raw_folder_exists:
-        # Create the "raw" folder if it doesn't exist
-        s3_client.put_object(Bucket=bucket_name, Key=raw_folder_prefix)
+    # Define the destination directory path with the current date
+    destination_directory = f'raw/brand-data/atletico/official_page_tweets/extracted_at={datetime.datetime.now().strftime("%Y-%m-%d")}/official_page_tweets.csv'
 
-    # Define the prefix for the current date's folder
-    source_prefix = f'{source_folder}/{current_date}/'
+    # Copy the file to the new directory
+    s3_client.copy_object(
+        Bucket=bucket_name,
+        CopySource={'Bucket': bucket_name, 'Key': source_directory},
+        Key=destination_directory
+    )
 
-    # List the objects in the bucket based on the prefix
-    response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=source_prefix)
+    # Delete the file from the original directory
+    s3_client.delete_object(
+        Bucket=bucket_name,
+        Key=source_directory
+    )
 
-    # Check if any objects are returned
-    if 'Contents' in response:
-        objects = response['Contents']
-
-        # Move each object to the "raw" folder
-        for obj in objects:
-            key = obj['Key']
-            destination_key = key.replace(source_folder, f'raw/{current_date}')
-
-            # Copy the object to the new location
-            s3_client.copy_object(
-                Bucket=bucket_name,
-                CopySource={'Bucket': bucket_name, 'Key': key},
-                Key=destination_key
-            )
-
-            print(f'Object moved: {key} -> {destination_key}')
-    else:
-        print('No objects found for the current date.')
+    logging.info(f'The file {file_name} has been moved to {destination_directory}.')
 
 
-
-
-# # Configuration
-# bucket_name = 'your-bucket'
-# source_folder = 'source-folder'
-
-# # Call the function to move the files to the "raw" folder
-# move_files_to_raw_folder(bucket_name, source_folder)
+if __name__ == "__main__":
+    logging.info('About to start moving the data from staging to raw bucket')
+    move_files_to_daily_directory(
+        BUCKET_NAME, SOURCE_DIRECTORY, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME)
+    logging.info('Finish moving the data from staging to raw bucket')
