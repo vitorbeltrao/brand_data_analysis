@@ -43,13 +43,15 @@ DB_NAME = config('DB_NAME')
 USER = config('USER')
 PASSWORD = config('PASSWORD')
 SCHEMA_TO_CREATE = config('SCHEMA_TO_CREATE')
+TEMP_SCHEMA_TO_CREATE = config('TEMP_SCHEMA_TO_CREATE')
 TABLE_NAME = config('TABLE_NAME')
 
 
 if __name__ == "__main__":
     # 1. create the schema if it does not already exist
     logging.info('About to start executing the create schema function')
-    create_schema_into_postgresql(ENDPOINT_NAME, PORT, DB_NAME, USER, PASSWORD, SCHEMA_TO_CREATE)
+    create_schema_into_postgresql(ENDPOINT_NAME, PORT, DB_NAME, USER, PASSWORD, SCHEMA_TO_CREATE) # main schema
+    create_schema_into_postgresql(ENDPOINT_NAME, PORT, DB_NAME, USER, PASSWORD, TEMP_SCHEMA_TO_CREATE) # temp schema
     logging.info('Done executing the create schema function\n')
 
     # 2. create tables
@@ -99,6 +101,7 @@ if __name__ == "__main__":
         PASSWORD,
         SCHEMA_TO_CREATE,
         TABLE_NAME,
-        raw_df)
+        raw_df,
+        TEMP_SCHEMA_TO_CREATE)
     logging.info(
         'Done executing inserting the data into official_page_tweets table\n')

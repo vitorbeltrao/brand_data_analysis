@@ -158,7 +158,8 @@ def insert_data_into_postgresql(
         password: str,
         schema_name: str,
         table_name: str,
-        df: pd.DataFrame) -> None:
+        df: pd.DataFrame,
+        temp_schema_name: str) -> None:
     '''
     Function that inserts data from a Pandas DataFrame into a PostgreSQL table.
     If the table does not exist, it creates a new one in the specified schema.
@@ -211,7 +212,7 @@ def insert_data_into_postgresql(
     df.to_sql(
         name=temp_table_name,
         con=engine.connect(),
-        schema=schema_name,
+        schema=temp_schema_name,
         index=False,
         if_exists='replace')
     logging.info('Temporary table was created: SUCCESS')
@@ -234,13 +235,14 @@ def insert_data_into_postgresql(
                 f'The columns of the DataFrame do not match the columns of the table {schema_name}.{table_name}')
 
         # Insert the data into the final table without overwriting existing data
-        insert_query = f'INSERT INTO {schema_name}.{table_name} SELECT * FROM {schema_name}.{temp_table_name} ON CONFLICT (tweet_id) DO NOTHING;'
+        insert_query = f'INSERT INTO {schema_name}.{table_name} SELECT * FROM {temp_schema_name}.{temp_table_name} ON CONFLICT (tweet_id) DO NOTHING;'
         with conn.cursor() as cur:
             cur.execute(insert_query)
         logging.info('The dataframe data has been inserted: SUCCESS')
 
     # Remove the temporary table
-    drop_query = f'DROP TABLE {schema_name}.{temp_table_name};'
+    drop_query = f'DROP TABLE {temp_schema_name}.{temp_table_name} CASCADE;'
+
     with conn.cursor() as cur:
         cur.execute(drop_query)
     logging.info('The temp table has been removed: SUCCESS')
