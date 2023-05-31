@@ -10,19 +10,11 @@ Date: May/2023
 import boto3
 import logging
 import datetime
-from decouple import config
 
 logging.basicConfig(
     level=logging.INFO,
     filemode='w',
     format='%(name)s - %(levelname)s - %(message)s')
-
-# config
-BUCKET_NAME = config('BUCKET_NAME')
-SOURCE_DIRECTORY = config('SOURCE_DIRECTORY')
-AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
-REGION_NAME = config('REGION_NAME')
 
 
 def move_files_to_daily_directory(
@@ -70,10 +62,3 @@ def move_files_to_daily_directory(
     )
 
     logging.info(f'The file {file_name} has been moved to {destination_directory}.')
-
-
-if __name__ == "__main__":
-    logging.info('About to start moving the data from staging to raw bucket')
-    move_files_to_daily_directory(
-        BUCKET_NAME, SOURCE_DIRECTORY, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME)
-    logging.info('Finish moving the data from staging to raw bucket')
