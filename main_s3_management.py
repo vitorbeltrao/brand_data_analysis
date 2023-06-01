@@ -10,7 +10,7 @@ import logging
 import boto3
 from decouple import config
 
-from components.create_s3_raw_folder import move_files_to_daily_directory
+from components.create_s3_raw_folder import move_files_to_raw_layer
 
 logging.basicConfig(
     level=logging.INFO,
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     csv_files = [obj['Key'] for obj in response['Contents'] if obj['Key'].lower().endswith('.csv')]
 
     for file in csv_files:
-        move_files_to_daily_directory(
+        move_files_to_raw_layer(
             BUCKET_NAME, file, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME)
     logging.info('Finish moving the data from staging to raw bucket')
 

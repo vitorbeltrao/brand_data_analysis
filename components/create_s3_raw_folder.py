@@ -17,14 +17,14 @@ logging.basicConfig(
     format='%(name)s - %(levelname)s - %(message)s')
 
 
-def move_files_to_daily_directory(
+def move_files_to_raw_layer(
         bucket_name: str, 
         source_directory: str, 
         aws_access_key_id: str, 
         aws_secret_access_key: str, 
         region_name: str) -> None:
     '''
-    Move files from the original directory to a daily directory in Amazon S3.
+    Move files from the original directory to the raw layer folder in Amazon S3.
 
     :param bucket_name: (str) Name of the S3 bucket.
     :param source_directory: (str) Path of the source directory containing the files to be moved.
