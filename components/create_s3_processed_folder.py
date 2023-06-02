@@ -54,7 +54,7 @@ def move_files_to_processed_layer(
     raw_data = pd.read_csv(obj['Body'], usecols=['tweet_id', 'created_at', 'text', 'retweets', 'likes', 'id', 'ran_at', 'updated_at'])
 
     # Perform data transformations
-    processed_data = raw_data # Placeholder for actual data transformations
+    processed_data = raw_data.copy()
 
     # Create the 'tmp' directory if it doesn't exist
     if not os.path.exists('tmp'):
@@ -69,4 +69,4 @@ def move_files_to_processed_layer(
     # Delete the temporary file
     os.remove(f'tmp/{current_date}_processed_data.parquet')
 
-    print(f'Data for {current_date} processed and saved in {processed_directory}.')
+    logging.info(f'Data for {current_date} processed and saved in {processed_directory}.')
