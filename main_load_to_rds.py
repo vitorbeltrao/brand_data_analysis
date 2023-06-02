@@ -93,15 +93,18 @@ if __name__ == "__main__":
     create_auxiliary_columns(raw_df) # creating the id, ran_at and updated_at columns
 
     # loading data
-    insert_data_into_postgresql(
-        ENDPOINT_NAME,
-        PORT,
-        DB_NAME,
-        USER,
-        PASSWORD,
-        SCHEMA_TO_CREATE,
-        TABLE_NAME,
-        raw_df,
-        TEMP_SCHEMA_TO_CREATE)
-    logging.info(
-        'Done executing inserting the data into official_page_tweets table\n')
+    if raw_df.empty:
+        logging.info('The dataframe is empty.')
+    else:
+        insert_data_into_postgresql(
+            ENDPOINT_NAME,
+            PORT,
+            DB_NAME,
+            USER,
+            PASSWORD,
+            SCHEMA_TO_CREATE,
+            TABLE_NAME,
+            raw_df,
+            TEMP_SCHEMA_TO_CREATE)
+        logging.info(
+            'Done executing inserting the data into official_page_tweets table\n')
