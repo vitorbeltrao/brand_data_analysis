@@ -51,7 +51,7 @@ def move_files_to_processed_layer(
 
     # Read the raw data from S3, selecting only desired columns
     obj = s3_client.get_object(Bucket=bucket_name, Key=raw_directory)
-    raw_data = pd.read_csv(obj['Body'], usecols=['tweet_id', 'created_at', 'text', 'retweets', 'likes'])
+    raw_data = pd.read_csv(obj['Body'], usecols=['tweet_id', 'created_at', 'text', 'retweets', 'likes', 'id', 'ran_at', 'updated_at'])
 
     # Perform data transformations
     processed_data = raw_data # Placeholder for actual data transformations
