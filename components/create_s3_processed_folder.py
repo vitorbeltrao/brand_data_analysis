@@ -56,6 +56,10 @@ def move_files_to_processed_layer(
     # Perform data transformations
     processed_data = raw_data.copy()
 
+    current_datetime = datetime.datetime.now()
+    adjusted_datetime = current_datetime - datetime.timedelta(hours=3) # Subtract 3 hours
+    processed_data['created_at'] = adjusted_datetime
+
     # Create the 'tmp' directory if it doesn't exist
     if not os.path.exists('tmp'):
         os.makedirs('tmp')
