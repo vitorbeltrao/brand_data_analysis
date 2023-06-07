@@ -6,7 +6,8 @@
 2. [Files Description](#files)
 3. [Running Files](#running)
 4. [Orchestration](#orchestration)
-5. [Licensing and Authors](#licensingandauthors)
+5. [Data Visualization](#visualization)
+6. [Licensing and Authors](#licensingandauthors)
 ***
 
 ## Project Description <a name="description"></a>
@@ -32,15 +33,21 @@ This project aims to collect data from Twitter using the official API, store it 
 
 ## Files Description <a name="files"></a>
 
-* `docker-compose.yml`: Docker Compose file for creating the PostgreSQL database locally.
+* `template.yaml`: AWS cloud formation instance template to create RDS, DMS and S3 services, integrating all of them.
 
-* `main.py`: Main Python script for running the data collection, transformation, and upload the transformed data, that is, all three components created in the *components* folder.
+* `main's files`: two main files in the main directory that manage all the functions that are in the *components* folder.
 
-* `components/`: Directory containing the modularized components for the project.
+    * `main_load_to_rds.py`: Python script for running the data collection, transformation, and upload the transformed data into the RDS Postgres.
+    * `main_s3_management.py`: Python script to manage all transformations of datalake layers in S3 bucket
 
-    * `data_collector.py`: Python module to collect raw data from Kaggle and read it as a pandas dataframe.
+* `components/`: Directory containing the modularized components for the project. The files listed here are more or less in the order they are called.
+
+    * `extract_tweets.py`: Python module to collect data from twitter and read them as pandas dataframe.
     * `data_transform.py`: Python module for transforming the raw data into a format that can be loaded into the PostgreSQL database.
     * `data_load.py`: Python module for loading the transformed data into the PostgreSQL database.
+    * `create_s3_raw_folder.py`: Python module to move the data that arrived in the staging bucket from the DMS to the raw layer.
+    * `create_s3_processed_folder.py`: Python module to move data from raw layer to processed layer (performing some basic transformations).
+    * `create_s3_curated_folder.py`: Python module to move the data from the processed layer to the curated layer (performing some major, business-specific transformations).
 
 * `tests/`: directory that contains the tests for the functions that are in `components/`.
 
@@ -58,45 +65,31 @@ To run the project, follow these steps:
 
 ### Clone the repository
 
-Go to [populate_database](https://github.com/vitorbeltrao/populate_database) and click on Fork in the upper right corner. This will create a fork in your Github account, i.e., a copy of the repository that is under your control. Now clone the repository locally so you can start working on it:
+Go to [brand_data_analysis](https://github.com/vitorbeltrao/brand_data_analysis) and click on Fork in the upper right corner. This will create a fork in your Github account, i.e., a copy of the repository that is under your control. Now clone the repository locally so you can start working on it:
 
-`git clone https://github.com/[your_github_username]/populate_database.git`
+`git clone https://github.com/[your_github_username]/brand_data_analysis.git`
 
 and go into the repository:
 
-`cd populate_database` 
+`cd brand_data_analysis` 
 
-### Install Docker
+### Create AWS account
 
-On Windows, you will have to [install docker](https://docs.docker.com/desktop/install/windows-install/) to be able to run the database locally.
-
-Once installed, you can run it in your terminal: `docker-compose up db` or `docker-compose up -d db` to start your database. To stop docker, just run it in your terminal: `docker-compose down`.
+Go to the [AWS](https://aws.amazon.com/) page and create a free account for you to use the services needed for the project.
 
 ### .env File
 
-To make everything work, you need to create the `.env` file in your main directory, so that *main.py* runs smoothly. 
+To make everything work, you need to create the `.env` file in your main directory, so that *main's* files runs smoothly. 
 
-In the .env, you must define the following variables:
+In the .env, you must define all necessary variables like usernames, passwords and anything else that is sensitive information for your project.
 
-* `HOST_NAME`: str (Name of your hostname)
+### template.yaml File
 
-* `PORT`: str (Number of port used for the protocol)
-
-* `DB_NAME`: str (Name of your postgres database)
-
-* `USER`: str (Name of postgres user)
-
-* `PASSWORD`: str (The password of created database)
-
-* `SCHEMAS_TO_CREATE`: Do not quote this variable (Name of the schemas you want to create, for example: *SCHEMAS_TO_CREATE = startups_hiring,nba*)
-
-* `OPEN_POSITIONS_RAW_PATH`: str (Startups dataset path)
-
-* `NBA_PAYROLL_RAW_PATH`, `NBA_PLAYER_BOX_RAW_PATH`, `NBA_PLAYER_STATS_RAW_PATH`, `NBA_SALARIES_RAW_PATH`: str (NBA datasets path)
+Go to the [cloud formation](https://aws.amazon.com/cloudformation/) instance on AWS and upload this template so that the database, DMS and S3 services are created to start the pipeline.
 
 ### main.py File
 
-After all the above steps, and with docker running, you can run it in your terminal, in your main directory: `python main.py` to execute the three components in order from the *components* folder.
+After all the above steps, you can run it in your terminal (in the order), in your main directory: `python main_load_to_rds.py` and `python main_s3_management.py` to execute the components in order from the *components* folder.
 
 ### Testing
 
@@ -104,12 +97,19 @@ After all the above steps, and with docker running, you can run it in your termi
 
     `pytest`
 
-    The tests of the functions used are in the `populate_database/tests` folder and to run them just write the code above in the terminal. In that folder are the tests that cover the production functions that are in the `populate_database/components` folder.
+    The tests of the functions used are in the `brand_data_analysis/tests` folder and to run them just write the code above in the terminal. In that folder are the tests that cover the production functions that are in the `brand_data_analysis/components` folder.
 ***
 
 ## Orchestration <a name="orchestration"></a>
 
 The project uses a modularized approach for data collection, transformation, and loading. This approach allows for greater flexibility and scalability in the project. The main.py script orchestrates the execution of these modules.
+***
+
+## Data Visualization <a name="visualization"></a>
+
+The data collected from twitter and passed for several transformations along the pipeline, based on various inputs from employees targeting different business rules, were made available in a dashboard by the [metabase](https://www.metabase.com/).
+
+![Brand Analysis dashboard]()
 ***
 
 ## Licensing and Author <a name="licensingandauthors"></a>
