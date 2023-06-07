@@ -118,8 +118,8 @@ def move_files_to_curated_layer(
     current_date = datetime.datetime.now().strftime('%Y-%m-%d')
 
     # Define the paths for the processed and curated layers
-    processed_directory = f'processed/brand-data/atletico/official_page_tweets/extracted_at={current_date}/official_page_tweets.parquet'
-    curated_directory = f'curated/brand-data/atletico/official_page_tweets/extracted_at={current_date}/official_page_tweets.csv'
+    processed_directory = f'processed/brand-data/atletico/official_page_tweets/extracted_at={current_date}/processed_data.parquet'
+    curated_directory = f'curated/brand-data/atletico/official_page_tweets/extracted_at={current_date}/'
 
     # Create a session with AWS credentials
     session = boto3.Session(
@@ -132,10 +132,11 @@ def move_files_to_curated_layer(
     s3_client = session.client('s3')
 
     # Download the processed data from S3
-    s3_client.download_file(bucket_name, processed_directory, 'tmp/processed_data.parquet')
+    processed_file_path = 'tmp/processed_data.parquet'
+    s3_client.download_file(bucket_name, processed_directory, processed_file_path)
 
     # Read the processed data from Parquet format
-    processed_data = pd.read_parquet('tmp/processed_data.parquet')
+    processed_data = pd.read_parquet(processed_file_path)
 
     # Perform additional data transformations
     curated_data = processed_data.copy()
@@ -154,23 +155,29 @@ def move_files_to_curated_layer(
     if not os.path.exists('tmp'):
         os.makedirs('tmp')
 
-    # Save the curated data to parquet format
-    curated_data.to_parquet(f'tmp/{current_date}_curated_data.parquet', index=False)
-    ngram_one.to_parquet(f'tmp/{current_date}_ngram_one.parquet', index=False)
-    ngram_two.to_parquet(f'tmp/{current_date}_ngram_two.parquet', index=False)
-    ngram_three.to_parquet(f'tmp/{current_date}_ngram_three.parquet', index=False)
+    # Save the curated data and ngrams to temporary files
+    curated_data_file = 'curated_data.parquet'
+    ngram_one_file = 'ngram_one.parquet'
+    ngram_two_file = 'ngram_two.parquet'
+    ngram_three_file = 'ngram_three.parquet'
 
-    # Upload the parquet file to S3
-    s3_client.upload_file(f'tmp/{current_date}_curated_data.parquet', bucket_name, curated_directory)
-    s3_client.upload_file(f'tmp/{current_date}_ngram_one.parquet', bucket_name, curated_directory)
-    s3_client.upload_file(f'tmp/{current_date}_ngram_two.parquet', bucket_name, curated_directory)
-    s3_client.upload_file(f'tmp/{current_date}_ngram_three.parquet', bucket_name, curated_directory)
+    curated_data.to_parquet(f'tmp/{curated_data_file}', index=False)
+    ngram_one.to_parquet(f'tmp/{ngram_one_file}', index=False)
+    ngram_two.to_parquet(f'tmp/{ngram_two_file}', index=False)
+    ngram_three.to_parquet(f'tmp/{ngram_three_file}', index=False)
+
+    # Upload the curated data and ngrams to S3
+    s3_client.upload_file(f'tmp/{curated_data_file}', bucket_name, curated_directory + curated_data_file)
+    s3_client.upload_file(f'tmp/{ngram_one_file}', bucket_name, curated_directory + ngram_one_file)
+    s3_client.upload_file(f'tmp/{ngram_two_file}', bucket_name, curated_directory + ngram_two_file)
+    s3_client.upload_file(f'tmp/{ngram_three_file}', bucket_name, curated_directory + ngram_three_file)
 
     # Delete the temporary files
-    os.remove('tmp/processed_data.parquet')
-    os.remove(f'tmp/{current_date}_curated_data.parquet')
-    os.remove(f'tmp/{current_date}_ngram_one.parquet')
-    os.remove(f'tmp/{current_date}_ngram_two.parquet')
-    os.remove(f'tmp/{current_date}_ngram_three.parquet')
+    os.remove(processed_file_path)
+    os.remove(f'tmp/{curated_data_file}')
+    os.remove(f'tmp/{ngram_one_file}')
+    os.remove(f'tmp/{ngram_two_file}')
+    os.remove(f'tmp/{ngram_three_file}')
 
+    # Log the successful completion
     logging.info(f'Curated data for {current_date} processed and saved in {curated_directory}.')

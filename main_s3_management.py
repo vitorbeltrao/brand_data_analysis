@@ -11,9 +11,7 @@ import boto3
 from decouple import config
 
 from components.create_s3_raw_folder import move_files_to_raw_layer
-
 from components.create_s3_processed_folder import move_files_to_processed_layer
-
 from components.create_s3_curated_folder import move_files_to_curated_layer
 
 logging.basicConfig(
@@ -50,21 +48,16 @@ if __name__ == "__main__":
             move_files_to_raw_layer(
                 BUCKET_NAME, file, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME)
     except:
-        pass
+        logging.info('Staging folder is empty')
+
     logging.info('Finish moving the data from staging to raw bucket\n')
 
     # 2. Move data from RAW to PROCESSED
     logging.info('About to start moving the data from raw to processed layer')
-    try:
-        move_files_to_processed_layer(BUCKET_NAME, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME)
-    except:
-        pass
+    move_files_to_processed_layer(BUCKET_NAME, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME)
     logging.info('Finish moving the data from raw to processed layer\n')
 
     # 3. Move data from PROCESSED to CURATED
     logging.info('About to start moving the data from processed to curated layer')
-    try:
-        move_files_to_curated_layer(BUCKET_NAME, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME)
-    except:
-        pass
+    move_files_to_curated_layer(BUCKET_NAME, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME)
     logging.info('Finish moving the data from processed to curated layer')

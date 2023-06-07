@@ -37,7 +37,7 @@ def move_files_to_processed_layer(
 
     # Define the paths for the raw and processed layers
     raw_directory = f'raw/brand-data/atletico/official_page_tweets/extracted_at={current_date}/official_page_tweets.csv'
-    processed_directory = f'processed/brand-data/atletico/official_page_tweets/extracted_at={current_date}/official_page_tweets.parquet'
+    processed_directory = f'processed/brand-data/atletico/official_page_tweets/extracted_at={current_date}/processed_data.parquet'
 
     # Create a session with AWS credentials
     session = boto3.Session(
@@ -51,14 +51,11 @@ def move_files_to_processed_layer(
 
     # Read the raw data from S3, selecting only desired columns
     obj = s3_client.get_object(Bucket=bucket_name, Key=raw_directory)
-    raw_data = pd.read_csv(obj['Body'], usecols=['tweet_id', 'created_at', 'text', 'retweets', 'likes', 'id', 'ran_at', 'updated_at'])
+    raw_data = pd.read_csv(obj['Body'], names=['tweet_id', 'created_at', 'text', 'retweets', 'likes', 'id', 'ran_at', 'updated_at'])
 
     # Perform data transformations
     processed_data = raw_data.copy()
-
-    current_datetime = datetime.datetime.now()
-    adjusted_datetime = current_datetime - datetime.timedelta(hours=3) # Subtract 3 hours
-    processed_data['created_at'] = adjusted_datetime
+    processed_data['created_at'] = pd.to_datetime(processed_data['created_at'])
 
     # Create the 'tmp' directory if it doesn't exist
     if not os.path.exists('tmp'):
@@ -73,4 +70,4 @@ def move_files_to_processed_layer(
     # Delete the temporary file
     os.remove(f'tmp/{current_date}_processed_data.parquet')
 
-    logging.info(f'Data for {current_date} processed and saved in {processed_directory}.')
+    logging.info(f'Processed data for {current_date} processed and saved in {processed_directory}.')
