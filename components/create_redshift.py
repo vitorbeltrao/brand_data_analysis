@@ -14,6 +14,7 @@ logging.basicConfig(
     filemode='w',
     format='%(name)s - %(levelname)s - %(message)s')
 
+
 def create_redshift_table(
         redshift_host: str,
         redshift_port: str,
@@ -104,7 +105,12 @@ def copy_data_from_s3_to_redshift(
     s3_path = f's3://{s3_bucket}/{s3_prefix}'
 
     # Construct the COPY command
-    copy_command = f"COPY {table_name} FROM '{s3_path}' CREDENTIALS 'aws_access_key_id={aws_access_key_id};aws_secret_access_key={aws_secret_access_key}' FORMAT AS PARQUET"
+    copy_command = f'''
+    COPY {table_name}
+    FROM '{s3_path}'
+    CREDENTIALS 'aws_access_key_id={aws_access_key_id};aws_secret_access_key={aws_secret_access_key}'
+    FORMAT AS PARQUET
+    '''
 
     # Establish a connection to Redshift
     conn = psycopg2.connect(

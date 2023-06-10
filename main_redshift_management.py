@@ -38,19 +38,19 @@ if __name__ == "__main__":
 
     table_name = 'curated_official_page_tweets'
     column_definitions = [
-    {'name': 'tweet_id', 'type': 'text'},
-    {'name': 'created_at', 'type': 'timestamp'},
-    {'name': 'text', 'type': 'text'},
-    {'name': 'retweets', 'type': 'integer'},
-    {'name': 'likes', 'type': 'integer'},
-    {'name': 'id', 'type': 'text'},
-    {'name': 'ran_at', 'type': 'timestamp'},
-    {'name': 'updated_at', 'type': 'timestamp'},
-    {'name': 'year', 'type': 'integer'},
-    {'name': 'month', 'type': 'integer'},
-    {'name': 'day', 'type': 'integer'},
-    {'name': 'hour', 'type': 'integer'},
-    {'name': 'day_of_week', 'type': 'integer'}]
+    {'name': 'tweet_id', 'type': 'TEXT'},
+    {'name': 'created_at', 'type': 'TIMESTAMP'},
+    {'name': 'tweet_text', 'type': 'TEXT'},
+    {'name': 'retweets', 'type': 'INT'},
+    {'name': 'likes', 'type': 'INT'},
+    {'name': 'id', 'type': 'TEXT'},
+    {'name': 'ran_at', 'type': 'TIMESTAMP'},
+    {'name': 'updated_at', 'type': 'TIMESTAMP'},
+    {'name': 'year_', 'type': 'INT'},
+    {'name': 'month_', 'type': 'INT'},
+    {'name': 'day_', 'type': 'INT'},
+    {'name': 'hour_', 'type': 'INT'},
+    {'name': 'day_of_week', 'type': 'INT'}]
 
     create_redshift_table(REDSHIFT_HOST, REDSHIFT_PORT, REDSHIFT_DB, REDSHIFT_USER, REDSHIFT_PASS, table_name, column_definitions)
     logging.info('Finish creating the redshift curated_official_page_tweets table\n')
@@ -60,8 +60,8 @@ if __name__ == "__main__":
 
     table_name_ngram_one = 'ngram_one'
     column_definitions_ngram_one = [
-        {'name': 'ngrams_1', 'type': 'text'},
-        {'name': 'frequencies_1', 'type': 'integer'}]
+        {'name': 'ngrams_1', 'type': 'TEXT'},
+        {'name': 'frequencies_1', 'type': 'INT'}]
 
     create_redshift_table(
         REDSHIFT_HOST, REDSHIFT_PORT, REDSHIFT_DB, REDSHIFT_USER, REDSHIFT_PASS, table_name_ngram_one, column_definitions_ngram_one)
@@ -70,10 +70,9 @@ if __name__ == "__main__":
     # 3. copying the data to the table curated_official_page_tweets
     logging.info('About to start uploading data to the curated_official_page_tweets table')
 
-    s3_prefix = f'curated/brand-data/atletico/official_page_tweets/extracted_at=2023-06-06/ngram_one.parquet'
+    s3_prefix = f'curated/brand-data/atletico/official_page_tweets/extracted_at=2023-06-06/curated_data.parquet'
     copy_data_from_s3_to_redshift(
-        REDSHIFT_HOST, REDSHIFT_PORT, REDSHIFT_DB, REDSHIFT_USER, REDSHIFT_PASS, AWS_ACCESS_KEY_ID, 
-        AWS_SECRET_ACCESS_KEY, BUCKET_NAME, s3_prefix, table_name)
+        REDSHIFT_HOST, REDSHIFT_PORT, REDSHIFT_DB, REDSHIFT_USER, REDSHIFT_PASS, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, BUCKET_NAME, s3_prefix, table_name)
     logging.info('Finish uploading data to the curated_official_page_tweets table\n')
 
     # 4. copying the data to the table ngram_one
