@@ -38,18 +38,18 @@ if __name__ == "__main__":
 
     table_name = 'curated_official_page_tweets'
     column_definitions = [
-    {'name': 'tweet_id', 'type': 'TEXT'},
+    {'name': 'tweet_id', 'type': 'INT'},
     {'name': 'created_at', 'type': 'TIMESTAMP'},
-    {'name': 'tweet_text', 'type': 'TEXT'},
+    {'name': 'text', 'type': 'TEXT'},
     {'name': 'retweets', 'type': 'INT'},
     {'name': 'likes', 'type': 'INT'},
-    {'name': 'id', 'type': 'TEXT'},
+    {'name': 'id', 'type': 'INT'},
     {'name': 'ran_at', 'type': 'TIMESTAMP'},
     {'name': 'updated_at', 'type': 'TIMESTAMP'},
-    {'name': 'year_', 'type': 'INT'},
-    {'name': 'month_', 'type': 'INT'},
-    {'name': 'day_', 'type': 'INT'},
-    {'name': 'hour_', 'type': 'INT'},
+    {'name': 'year', 'type': 'INT'},
+    {'name': 'month', 'type': 'INT'},
+    {'name': 'day', 'type': 'INT'},
+    {'name': 'hour', 'type': 'INT'},
     {'name': 'day_of_week', 'type': 'INT'}]
 
     create_redshift_table(REDSHIFT_HOST, REDSHIFT_PORT, REDSHIFT_DB, REDSHIFT_USER, REDSHIFT_PASS, table_name, column_definitions)
