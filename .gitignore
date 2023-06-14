@@ -161,3 +161,5 @@ cython_debug/
 
 # other
 *.ipynb
+components/create_redshift.py
+main_redshift_management.py
