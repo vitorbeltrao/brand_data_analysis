@@ -163,3 +163,5 @@ cython_debug/
 *.ipynb
 components/create_redshift.py
 main_redshift_management.py
+*.parquet
+/tmp

@@ -172,12 +172,12 @@ def move_files_to_curated_layer(
     s3_client.upload_file(f'tmp/{ngram_two_file}', bucket_name, curated_directory + ngram_two_file)
     s3_client.upload_file(f'tmp/{ngram_three_file}', bucket_name, curated_directory + ngram_three_file)
 
-    # Delete the temporary files
-    os.remove(processed_file_path)
-    os.remove(f'tmp/{curated_data_file}')
-    os.remove(f'tmp/{ngram_one_file}')
-    os.remove(f'tmp/{ngram_two_file}')
-    os.remove(f'tmp/{ngram_three_file}')
+    # # Delete the temporary files
+    # os.remove(processed_file_path)
+    # os.remove(f'tmp/{curated_data_file}')
+    # os.remove(f'tmp/{ngram_one_file}')
+    # os.remove(f'tmp/{ngram_two_file}')
+    # os.remove(f'tmp/{ngram_three_file}')
 
     # Log the successful completion
     logging.info(f'Curated data for {current_date} processed and saved in {curated_directory}.')
