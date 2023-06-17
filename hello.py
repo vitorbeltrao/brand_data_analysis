@@ -2,36 +2,40 @@
 Streamlit app homepage setup
 
 Author: Vitor Abdo
-Date: May/2023
+Date: June/2023
 '''
 
 # import necessary packages
 import streamlit as st
 from PIL import Image
 
-# Define a função para carregar informações sobre o app na sidebar
+# Define function to load information about the app in the sidebar
 def load_about():
-    st.sidebar.title("Sobre")
+    st.sidebar.title("About")
     st.sidebar.info(
-        """
-        Dúvidas ou sugestões, entre em contato:\n📩 vitorbeltrao300@gmail.com
-        """
+        '''
+        Questions or suggestions, get in touch:\n📩 vitorbeltrao300@gmail.com
+        '''
     )
 
-# Configurações iniciais da página
+# Set initial page configurations
 st.set_page_config(
-    page_title="Análise de Tweets do Atlético Mineiro",
-    page_icon="⚽",
+    page_title='Netflix Tweet Analysis',
+    page_icon='🎬',
 )
 
-# Título e imagem do clube
-st.title("Bem-vindo ao App de Análise de Tweets do Atlético Mineiro")
-# image = Image.open("path/para/o/seu/logo.png")  # Substitua pelo caminho do seu logo
-# st.image(image, use_column_width=True)
+# Title and image for the app
+st.title('Welcome to the Netflix Tweet Analysis App')
 
-# Breve descrição do app
-st.write("Este aplicativo permite analisar os dados dos tweets publicados pela página oficial do Clube Atlético Mineiro.")
-st.write("Você pode explorar diferentes gráficos e métricas para obter insights sobre as postagens.")
+# Load and resize the image
+image = Image.open('images/Netflix-Brand-Logo.png')  # Replace with the path to your logo
 
-# Carrega informações sobre o app na sidebar
+# Display the resized image
+st.image(image, use_column_width=True)
+
+# Brief description of the app
+st.write('This app allows you to analyze the data from tweets posted by Netflix.')
+st.write('You can explore different charts and metrics to gain insights into the tweets.')
+
+# Load information about the app in the sidebar
 load_about()
