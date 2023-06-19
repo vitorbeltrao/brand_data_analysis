@@ -46,7 +46,7 @@ def move_files_to_raw_layer(
     file_name = source_directory.split('/')[-1]
 
     # Define the destination directory path with the current date
-    destination_directory = f'raw/brand-data/atletico/official_page_tweets/extracted_at={datetime.datetime.now().strftime("%Y-%m-%d")}/official_page_tweets.csv'
+    destination_directory = f'raw/brand-data/netflix/extracted_at={datetime.datetime.now().strftime("%Y-%m-%d")}/official_page_tweets.csv'
 
     # Copy the file to the new directory
     s3_client.copy_object(

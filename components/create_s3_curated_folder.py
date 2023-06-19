@@ -38,7 +38,7 @@ def extract_ngrams(text, n):
         list: A list of n-grams extracted from the text.
     '''
     tokens = word_tokenize(text.lower())  # Tokenization
-    stop_words = set(stopwords.words('portuguese'))
+    stop_words = set(stopwords.words('english'))
     filtered_tokens = [token for token in tokens if token.isalpha() and token not in stop_words]  # Remove stopwords
     
     lemmatizer = WordNetLemmatizer()
@@ -118,8 +118,8 @@ def move_files_to_curated_layer(
     current_date = datetime.datetime.now().strftime('%Y-%m-%d')
 
     # Define the paths for the processed and curated layers
-    processed_directory = f'processed/brand-data/atletico/official_page_tweets/extracted_at={current_date}/processed_data.parquet'
-    curated_directory = f'curated/brand-data/atletico/official_page_tweets/extracted_at={current_date}/'
+    processed_directory = f'processed/brand-data/netflix/extracted_at={current_date}/processed_data.parquet'
+    curated_directory = f'curated/brand-data/netflix/extracted_at={current_date}/'
 
     # Create a session with AWS credentials
     session = boto3.Session(

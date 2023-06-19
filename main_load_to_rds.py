@@ -55,9 +55,9 @@ if __name__ == "__main__":
     logging.info('Done executing the create schema function\n')
 
     # 2. create tables
-    # 2.1 create first table in "galo_brand_data" schema
+    # 2.1 create first table in "brand_data" schema
     logging.info(
-        'About to start executing the create table "official_page_tweets" function')
+        'About to start executing the create table "netflix.official_page_tweets" function')
     table_columns = '''
     tweet_id TEXT,
     created_at TIMESTAMP,
@@ -78,11 +78,11 @@ if __name__ == "__main__":
         SCHEMA_TO_CREATE,
         'official_page_tweets',
         table_columns)
-    logging.info('Done executing the create table "official_page_tweets" function\n')
+    logging.info('Done executing the create table "netflix.official_page_tweets" function\n')
 
     # 3. insert transformed dataframes into postgres
-    # 3.1 insert data into official_page_tweets table
-    logging.info('About to start inserting the data into official_page_tweets table')
+    # 3.1 insert data into netflix.official_page_tweets table
+    logging.info('About to start inserting the data into netflix.official_page_tweets table')
 
     # extracting data
     api_connect = connect_twitter_api(
@@ -107,4 +107,4 @@ if __name__ == "__main__":
             raw_df,
             TEMP_SCHEMA_TO_CREATE)
         logging.info(
-            'Done executing inserting the data into official_page_tweets table\n')
+            'Done executing inserting the data into netflix.official_page_tweets table\n')
