@@ -9,10 +9,10 @@ Date: May/2023
 # import necessary packages
 import logging
 from decouple import config
+from datetime import datetime, timedelta
 
 # data_collector component
-from components.extract_tweets import connect_twitter_api
-from components.extract_tweets import get_tweets_from_user_for_today
+from components.data_extract import fetchAsteroidNeowsFeed
 
 # data_transform component
 from components.data_transform import create_auxiliary_columns
@@ -28,15 +28,7 @@ logging.basicConfig(
     format='%(name)s - %(levelname)s - %(message)s')
 
 # config
-# twitter config
-CONSUMER_KEY = config('CONSUMER_KEY')
-CONSUMER_SECRET = config('CONSUMER_SECRET')
-ACCESS_TOKEN = config('ACCESS_TOKEN')
-ACCESS_TOKEN_SECRET = config('ACCESS_TOKEN_SECRET')
-BEARER_TOKEN = config('BEARER_TOKEN')
-OFFICIAL_TWITTER_USER_ID = config('OFFICIAL_TWITTER_USER_ID')
-
-# RDS database
+NASA_API_KEY = config('NASA_API_KEY')
 ENDPOINT_NAME = config('ENDPOINT_NAME')
 PORT = config('PORT')
 DB_NAME = config('DB_NAME')
@@ -55,17 +47,21 @@ if __name__ == "__main__":
     logging.info('Done executing the create schema function\n')
 
     # 2. create tables
-    # 2.1 create first table in "brand_data" schema
+    # 2.1 create first table in "nasa_data_db" schema
     logging.info(
-        'About to start executing the create table "netflix.official_page_tweets" function')
+        'About to start executing the create table "nasa.asteroidsNeows" function')
     table_columns = '''
-    tweet_id TEXT,
-    created_at TIMESTAMP,
-    text TEXT,
-    likes INT,
-    retweets INT,
+    links TEXT,
     id SERIAL PRIMARY KEY,
-    ran_at TIMESTAMP,
+    neo_reference_id TEXT,
+    name TEXT,
+    nasa_jpl_url TEXT,
+    absolute_magnitude_h FLOAT,
+    estimated_diameter TEXT,
+    is_potentially_hazardous_asteroid BOOL,
+    close_approach_data TEXT,
+    is_sentry_object BOOL 
+    created_at TIMESTAMP,
     updated_at TIMESTAMP
     '''
 
@@ -76,21 +72,22 @@ if __name__ == "__main__":
         USER,
         PASSWORD,
         SCHEMA_TO_CREATE,
-        'official_page_tweets',
+        TABLE_NAME,
         table_columns)
-    logging.info('Done executing the create table "netflix.official_page_tweets" function\n')
+    logging.info('Done executing the create table "nasa.asteroidsNeows" function\n')
 
     # 3. insert transformed dataframes into postgres
-    # 3.1 insert data into netflix.official_page_tweets table
-    logging.info('About to start inserting the data into netflix.official_page_tweets table')
+    # 3.1 insert data into nasa.asteroidsNeows table
+    logging.info('About to start inserting the data into nasa.asteroidsNeows table')
 
     # extracting data
-    api_connect = connect_twitter_api(
-        CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET, BEARER_TOKEN)
-    raw_df = get_tweets_from_user_for_today(api_connect, OFFICIAL_TWITTER_USER_ID)
-
+    today_date = datetime.now().date()
+    date_seven_days_ago = today_date - timedelta(days=7)
+    raw_df = fetchAsteroidNeowsFeed(NASA_API_KEY, date_seven_days_ago, today_date)
+    logging.info(f'Data from {date_seven_days_ago} to {today_date} extracted successfully')
+ 
     # transforming data
-    create_auxiliary_columns(raw_df) # creating the id, ran_at and updated_at columns
+    create_auxiliary_columns(raw_df) # creating the created_at and updated_at columns
 
     # loading data
     if raw_df.empty:
@@ -107,4 +104,4 @@ if __name__ == "__main__":
             raw_df,
             TEMP_SCHEMA_TO_CREATE)
         logging.info(
-            'Done executing inserting the data into netflix.official_page_tweets table\n')
+            'Done executing inserting the data into nasa.asteroidsNeows table\n')

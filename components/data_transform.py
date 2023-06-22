@@ -8,7 +8,6 @@ Date: May/2023
 
 # import necessary packages
 import logging
-import uuid
 import pandas as pd
 import datetime as dt
 
@@ -19,20 +18,16 @@ logging.basicConfig(
 
 
 def create_auxiliary_columns(transformed_df: pd.DataFrame) -> None:
-    '''Function to create three auxiliary columns in datasets:
-    "id", "ran_at" and "updated_at"
+    '''Function to create two auxiliary columns in datasets:
+    "created_at" and "updated_at"
 
     :param transformed_df: (dataframe)
     Dataframe after all transformations just
     before being inserted into database
     '''
-    # inserting the "id" column with random UUIDs
-    transformed_df['id'] = transformed_df.apply(lambda row: hash(uuid.uuid4()) % (10 ** 9), axis=1)
-    logging.info(f'Column "id" was inserted: SUCCESS')
-
-    # inserting the "ran_at" and "updated_at" column
+    # inserting the "updated_at" and "updated_at" column
     current_time = dt.datetime.now()
-    transformed_df['ran_at'] = current_time
+    transformed_df['created_at'] = current_time
     transformed_df['updated_at'] = current_time
     logging.info(
-        'Columns "ran_at" and "updated_at" were inserted: SUCCESS')
+        'Columns "created_at" and "updated_at" were inserted: SUCCESS')

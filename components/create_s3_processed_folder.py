@@ -36,8 +36,8 @@ def move_files_to_processed_layer(
     current_date = datetime.datetime.now().strftime('%Y-%m-%d')
 
     # Define the paths for the raw and processed layers
-    raw_directory = f'raw/brand-data/netflix/extracted_at={current_date}/official_page_tweets.csv'
-    processed_directory = f'processed/brand-data/netflix/extracted_at={current_date}/processed_data.parquet'
+    raw_directory = f'raw/nasa-app/asteroidsNeows/extracted_at={current_date}/asteroidsNeows.csv'
+    processed_directory = f'processed/nasa-app/asteroidsNeows/extracted_at={current_date}/processed_asteroidsNeows.parquet'
 
     # Create a session with AWS credentials
     session = boto3.Session(

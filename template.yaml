@@ -9,7 +9,7 @@ Resources:
   MyDBSecret:
     Type: 'AWS::SecretsManager::Secret'
     Properties:
-      Name: MySecretForAppBrandData
+      Name: MySecretForAppNasaData
       GenerateSecretString:
         SecretStringTemplate: '{"username": "user_admin"}'
         GenerateStringKey: "password"
@@ -101,7 +101,7 @@ Resources:
       EndpointType: target
       EngineName: s3
       S3Settings:
-        BucketFolder: brand-data
+        BucketFolder: nasa-data
         BucketName: !Ref MyS3Bucket
         ServiceAccessRoleArn: !GetAtt MyDMSTargetRole.Arn
 
@@ -122,7 +122,7 @@ Resources:
               "rule-id": "1",
               "rule-name": "rule1",
               "object-locator": {
-                "schema-name": "galo_tweets",
+                "schema-name": "nasa_data_db",
                 "table-name": "%"
               },
               "rule-action": "include"
