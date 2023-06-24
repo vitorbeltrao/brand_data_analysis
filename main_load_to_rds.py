@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     # 3. insert transformed dataframes into postgres
     # 3.1 insert data into nasa.asteroidsNeows table
-    logging.info('About to start inserting the data into nasa.asteroidsNeows table')
+    logging.info('About to start inserting the data into "nasa.asteroidsNeows" table')
 
     # extracting data
     today_date = datetime.now().date()
@@ -104,4 +104,4 @@ if __name__ == "__main__":
             raw_df,
             TEMP_SCHEMA_TO_CREATE)
         logging.info(
-            'Done executing inserting the data into nasa.asteroidsNeows table\n')
+            'Done executing inserting the data into "nasa.asteroidsNeows" table\n')

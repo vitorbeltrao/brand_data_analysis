@@ -7,7 +7,6 @@ Date: June/2023
 
 # import necessary packages
 import boto3
-import os
 import logging
 import datetime
 import pandas as pd
@@ -56,5 +55,6 @@ def get_files_from_processed_layer(
         'is_sentry_object', 'kilometers_estimated_diameter_min', 'kilometers_estimated_diameter_max',
         'close_approach_date', 'orbiting_body', 'velocity_kilometers_per_hour', 'distance_kilometers',
         'created_at', 'updated_at'])
+    logging.info('The processed data was obtained successfully')
     
     return processed_data

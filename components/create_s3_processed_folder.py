@@ -59,7 +59,7 @@ def move_files_to_processed_layer(
     processed_data = raw_data.copy()
     processed_data.drop(['links', 'neo_reference_id', 'nasa_jpl_url'], axis=1, inplace=True) # drop unnecessary columns
     processed_data['name'] = processed_data['name'].str.replace(r'\(|\)', '', regex=True) # remove unnecessary parentesis of instances
-    logging.info(f'Columns have been removed: SUCCESS')
+    logging.info('Columns have been removed: SUCCESS')
 
     # normalize 'estimated_diameter' column
     diameter = pd.json_normalize(processed_data['estimated_diameter'])
@@ -67,7 +67,7 @@ def move_files_to_processed_layer(
     close_approach_final.rename(columns = {
         'kilometers.estimated_diameter_min':'kilometers_estimated_diameter_min',
         'kilometers.estimated_diameter_max':'kilometers_estimated_diameter_max'}, inplace = True)
-    logging.info(f'Column "estimated_diameter" have been normalized: SUCCESS')
+    logging.info('Column "estimated_diameter" have been normalized: SUCCESS')
 
     # normalize 'close_approach_data' column
     close_approach_slice_one = pd.DataFrame()
@@ -89,7 +89,7 @@ def move_files_to_processed_layer(
     close_approach_final.rename(columns = {
         'kilometers_per_hour':'velocity_kilometers_per_hour',
         'kilometers':'distance_kilometers'}, inplace = True)
-    logging.info(f'Column "close_approach_data" have been normalized: SUCCESS')
+    logging.info('Column "close_approach_data" have been normalized: SUCCESS')
     
     # join everything in one final dataframe and do final modifications
     processed_data_intermediate = processed_data.join(diameter)
@@ -100,7 +100,7 @@ def move_files_to_processed_layer(
     processed_data_final['velocity_kilometers_per_hour'] = processed_data_final['velocity_kilometers_per_hour'].astype(float)
     processed_data_final['distance_kilometers'] = processed_data_final['distance_kilometers'].astype(float)
 
-    logging.info(f'All dataframes with transformations have been merged: SUCCESS')
+    logging.info('All dataframes with transformations have been merged: SUCCESS')
     ####################################################################################################
     # Create the 'tmp' directory if it doesn't exist
     if not os.path.exists('tmp'):
