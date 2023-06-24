@@ -73,13 +73,13 @@ To run the project, follow these steps:
 
 ### Clone the repository
 
-Go to [brand_data_analysis](https://github.com/vitorbeltrao/brand_data_analysis) and click on Fork in the upper right corner. This will create a fork in your Github account, i.e., a copy of the repository that is under your control. Now clone the repository locally so you can start working on it:
+Go to [nasa_data_analysis](https://github.com/vitorbeltrao/nasa_data_analysis) and click on Fork in the upper right corner. This will create a fork in your Github account, i.e., a copy of the repository that is under your control. Now clone the repository locally so you can start working on it:
 
-`git clone https://github.com/[your_github_username]/brand_data_analysis.git`
+`git clone https://github.com/[your_github_username]/nasa_data_analysis.git`
 
 and go into the repository:
 
-`cd brand_data_analysis` 
+`cd nasa_data_analysis` 
 
 ### Create AWS account
 
