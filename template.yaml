@@ -26,9 +26,9 @@ Resources:
       DBInstanceClass: db.t3.micro # free tier
       Engine: postgres
       EngineVersion: '14.7'
-      MasterUsername: '{{resolve:secretsmanager:MySecretForAppBrandData:SecretString:username}}'
-      MasterUserPassword: '{{resolve:secretsmanager:MySecretForAppBrandData:SecretString:password}}' # Referencing the secret value
-      DBInstanceIdentifier: brand-data-db
+      MasterUsername: '{{resolve:secretsmanager:MySecretForAppNasaData:SecretString:username}}'
+      MasterUserPassword: '{{resolve:secretsmanager:MySecretForAppNasaData:SecretString:password}}' # Referencing the secret value
+      DBInstanceIdentifier: nasa-data-db
       StorageType: gp2
       MultiAZ: false
       DBParameterGroupName: !Ref MyDBParameterGroup
@@ -63,8 +63,8 @@ Resources:
       DatabaseName: postgres
       ServerName: !GetAtt MyDBInstance.Endpoint.Address
       Port: !GetAtt MyDBInstance.Endpoint.Port
-      Username: '{{resolve:secretsmanager:MySecretForAppBrandData:SecretString:username}}'
-      Password: '{{resolve:secretsmanager:MySecretForAppBrandData:SecretString:password}}'
+      Username: '{{resolve:secretsmanager:MySecretForAppNasaData:SecretString:username}}'
+      Password: '{{resolve:secretsmanager:MySecretForAppNasaData:SecretString:password}}'
       ExtraConnectionAttributes: 'PluginName=PGLOGICAL;'
 
   # DMS Target Role

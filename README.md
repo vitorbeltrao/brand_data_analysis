@@ -1,4 +1,4 @@
-# Brand Data Analysis
+# NASA Data Analysis - Asteroid data exploration - v0.0.1
 
 ## Table of Contents
 
@@ -12,23 +12,25 @@
 
 ## Project Description <a name="description"></a>
 
-This project aims to collect data from Twitter using the official API, store it in an RDS Postgres database, replicate the data to an S3 datalake, perform layered transformations within the datalake (raw, processed, curated), send the transformed data to Redshift (an AWS managed data warehouse), and connect Redshift to Metabase to deliver valuable insights and information through data analysis. 
+This project aims to collect data from the NASA official API (Asteroids - NeoWs), store it in an RDS Postgres database, replicate the data to a data lake in S3 using the AWS Database Migration Service (DMS), perform layered transformations within the data lake (raw and processed), and visualize the data using the Streamlit Python library. 
 
-**Goals:**
+**The workflow includes the following steps:**
 
-* Collect Twitter data using the official API.
+* Data Collection: Retrieve data from the NASA API using the provided endpoints.
 
-* Store the collected data in an RDS Postgres database.
+* Data Storage: Store the collected data in an RDS Postgres database for persistent storage and easy retrieval.
 
-* Replicate the data to an S3 datalake.
+* Data Replication: Use the AWS Database Migration Service (DMS) to replicate the data from the RDS Postgres database to a data lake in S3. This ensures that the data is available in the data lake for further processing and analysis.
 
-* Perform layered transformations (raw, processed, curated) within the datalake.
+* Data Transformations: Apply necessary transformations and processing to the data within the data lake, creating processed datasets.
 
-* Send the transformed data to Redshift.
+* Send the transformed data to RDS Postgres as a data warehouse.
 
-* Connect Redshift to Metabase to provide insights and information to end-users.
+* Data Visualization: Utilize the Streamlit Python library to build interactive and informative data visualizations, enabling users to explore and analyze the processed datasets.
 
-![Brand Analysis architecture](https://github.com/vitorbeltrao/brand_data_analysis/blob/main/images/brand_data_analysis_architecture.jpg?raw=true)
+![architecture](https://github.com/vitorbeltrao/brand_data_analysis/blob/main/images/architecture.jpg?raw=true)
+
+By incorporating the AWS Database Migration Service (DMS) for data replication, the project ensures efficient and reliable transfer of data from the RDS Postgres database to the data lake in S3, facilitating subsequent transformations and visualization using the Streamlit Python library.
 ***
 
 ## Files Description <a name="files"></a>
@@ -39,21 +41,27 @@ This project aims to collect data from Twitter using the official API, store it 
 
     * `main_load_to_rds.py`: Python script for running the data collection, transformation, and upload the transformed data into the RDS Postgres.
     * `main_s3_management.py`: Python script to manage all transformations of datalake layers in S3 bucket
+    * `main_load_dw.py`: Python script to send the processed data from processed layer to a data warehouse, to improve the path to consult this data in a visualization tool, for example.
+    * `hello.py`: main page of the streamlit app.
 
 * `components/`: Directory containing the modularized components for the project. The files listed here are more or less in the order they are called.
 
-    * `extract_tweets.py`: Python module to collect data from twitter and read them as pandas dataframe.
+    * `data_extract.py`: Python module to collect data from nasa (Asteroids - NeoWs) and read them as pandas dataframe.
     * `data_transform.py`: Python module for transforming the raw data into a format that can be loaded into the PostgreSQL database.
     * `data_load.py`: Python module for loading the transformed data into the PostgreSQL database.
     * `create_s3_raw_folder.py`: Python module to move the data that arrived in the staging bucket from the DMS to the raw layer.
     * `create_s3_processed_folder.py`: Python module to move data from raw layer to processed layer (performing some basic transformations).
-    * `create_s3_curated_folder.py`: Python module to move the data from the processed layer to the curated layer (performing some major, business-specific transformations).
+    * `get_processed_s3_data.py`: Python module to retrieve the data from the processed layer.
+
+* `pages/`: directory that contains the streamlit pages to delivery to the customers.
+
+    * `exploratory_data_analysis.py`: Python script that we made our dashboard from the data.
 
 * `tests/`: directory that contains the tests for the functions that are in `components/`.
 
-    * `test_collector.py`: Unit tests for the functions of the respective component.
-    * `test_transform.py`: Unit tests for the functions of the respective component.
-    * `test_load.py`: Unit tests for the functions of the respective component.
+    * `test_collector.py`: Unit tests for the functions of the respective component (data_extract.py).
+    * `test_transform.py`: Unit tests for the functions of the respective component (data_transform.py).
+    * `test_load.py`: Unit tests for the functions of the respective component (data_load.py).
     * `conftest.py`: File where the fixtures were created to feed the unit tests.
 
 * `.env`: File containing environment variables used in the project.
@@ -77,19 +85,23 @@ and go into the repository:
 
 Go to the [AWS](https://aws.amazon.com/) page and create a free account for you to use the services needed for the project.
 
+### template.yaml File
+
+Go to the [cloud formation](https://aws.amazon.com/cloudformation/) instance on AWS and upload this template so that the database, DMS and S3 services are created to start the pipeline.
+
+### main's Files
+
+After all the above steps, you can run it in your terminal (in the order), in your main directory: `python main_load_to_rds.py`, `python main_s3_management.py` and `python main_load_dw.py` to execute the components in order from the *components* folder. This will run all the necessary pipeline (in order) to get the data into the database, then make the necessary transformations inside the data lake, and finally push the transformed data up to a data warehouse.
+
+### Stremlit app
+
+To run streamlit locally, just run: `streamlit run hello.py` and then a web browser will load the service and you can enjoy the dashboard. To deploy and make it available to anyone through a link, you must register on the [site](https://streamlit.io/) and follow the step by step.
+
 ### .env File
 
 To make everything work, you need to create the `.env` file in your main directory, so that *main's* files runs smoothly. 
 
 In the .env, you must define all necessary variables like usernames, passwords and anything else that is sensitive information for your project.
-
-### template.yaml File
-
-Go to the [cloud formation](https://aws.amazon.com/cloudformation/) instance on AWS and upload this template so that the database, DMS and S3 services are created to start the pipeline.
-
-### main.py File
-
-After all the above steps, you can run it in your terminal (in the order), in your main directory: `python main_load_to_rds.py` and `python main_s3_management.py` to execute the components in order from the *components* folder.
 
 ### Testing
 
@@ -107,9 +119,9 @@ The project uses a modularized approach for data collection, transformation, and
 
 ## Data Visualization <a name="visualization"></a>
 
-The data collected from twitter and passed for several transformations along the pipeline, based on various inputs from employees targeting different business rules, were made available in a dashboard by the [metabase](https://www.metabase.com/).
+The data collected from the NASA API and processed through various transformations in the pipeline, incorporating different business rules and inputs from employees, will be presented in a dashboard using the Streamlit library. This dashboard will provide an interactive and user-friendly interface to visualize and explore the NASA data. Streamlit is a powerful Python library for building data applications and interactive visualizations, allowing users to gain valuable insights from the collected and curated data.
 
-![Brand Analysis dashboard]()
+Here is the link to the dashboard implemented and available to anyone: (in progress...)
 ***
 
 ## Licensing and Author <a name="licensingandauthors"></a>
