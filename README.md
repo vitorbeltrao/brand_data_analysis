@@ -89,6 +89,8 @@ Go to the [AWS](https://aws.amazon.com/) page and create a free account for you 
 
 Go to the [cloud formation](https://aws.amazon.com/cloudformation/) instance on AWS and upload this template so that the database, DMS and S3 services are created to start the pipeline.
 
+After everything is created, including the postgres RDS instance, you must access the database and run this code: `create extension pglogical`
+
 ### main's Files
 
 After all the above steps, you can run it in your terminal (in the order), in your main directory: `python main_load_to_rds.py`, `python main_s3_management.py` and `python main_load_dw.py` to execute the components in order from the *components* folder. This will run all the necessary pipeline (in order) to get the data into the database, then make the necessary transformations inside the data lake, and finally push the transformed data up to a data warehouse.
