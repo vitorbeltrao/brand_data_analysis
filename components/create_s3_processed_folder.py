@@ -64,6 +64,9 @@ def move_files_to_processed_layer(
     # normalize 'estimated_diameter' column
     diameter = pd.json_normalize(processed_data['estimated_diameter'])
     diameter = diameter[['kilometers.estimated_diameter_min', 'kilometers.estimated_diameter_max']]
+    close_approach_final.rename(columns = {
+        'kilometers.estimated_diameter_min':'kilometers_estimated_diameter_min',
+        'kilometers.estimated_diameter_max':'kilometers_estimated_diameter_max'}, inplace = True)
     logging.info(f'Column "estimated_diameter" have been normalized: SUCCESS')
 
     # normalize 'close_approach_data' column
@@ -78,10 +81,14 @@ def move_files_to_processed_layer(
 
     slice_one_two = close_approach_slice_one.join(close_approach_slice_two)
     close_approach_final = slice_one_two.join(close_approach_slice_three)
-    close_approach_final = close_approach_final[['close_approach_date', 'orbiting_body', 
-                                                'kilometers_per_hour', 'kilometers']]
-    close_approach_final.rename(columns = {'kilometers_per_hour':'velocity_kilometers_per_hour',
-                                        'kilometers':'distance_kilometers'}, inplace = True)
+
+    close_approach_final = close_approach_final[
+        ['close_approach_date', 'orbiting_body', 
+         'kilometers_per_hour', 'kilometers']]
+    
+    close_approach_final.rename(columns = {
+        'kilometers_per_hour':'velocity_kilometers_per_hour',
+        'kilometers':'distance_kilometers'}, inplace = True)
     logging.info(f'Column "close_approach_data" have been normalized: SUCCESS')
     
     # join everything in one final dataframe and do final modifications
