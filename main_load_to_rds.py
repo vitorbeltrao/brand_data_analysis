@@ -8,6 +8,7 @@ Date: May/2023
 
 # import necessary packages
 import logging
+import json
 from decouple import config
 from datetime import datetime, timedelta
 
@@ -49,10 +50,10 @@ if __name__ == "__main__":
     # 2. create tables
     # 2.1 create first table in "nasa_data_db" schema
     logging.info(
-        'About to start executing the create table "nasa.asteroidsNeows" function')
+        'About to start executing the create table "nasa_asteroidsneows" function')
     table_columns = '''
     links TEXT,
-    id SERIAL PRIMARY KEY,
+    id TEXT,
     neo_reference_id TEXT,
     name TEXT,
     nasa_jpl_url TEXT,
@@ -60,7 +61,7 @@ if __name__ == "__main__":
     estimated_diameter TEXT,
     is_potentially_hazardous_asteroid BOOL,
     close_approach_data TEXT,
-    is_sentry_object BOOL 
+    is_sentry_object BOOL, 
     created_at TIMESTAMP,
     updated_at TIMESTAMP
     '''
@@ -74,11 +75,11 @@ if __name__ == "__main__":
         SCHEMA_TO_CREATE,
         TABLE_NAME,
         table_columns)
-    logging.info('Done executing the create table "nasa.asteroidsNeows" function\n')
+    logging.info('Done executing the create table "nasa_asteroidsneows" function\n')
 
     # 3. insert transformed dataframes into postgres
     # 3.1 insert data into nasa.asteroidsNeows table
-    logging.info('About to start inserting the data into "nasa.asteroidsNeows" table')
+    logging.info('About to start inserting the data into "nasa_asteroidsneows" table')
 
     # extracting data
     today_date = datetime.now().date()
@@ -93,6 +94,11 @@ if __name__ == "__main__":
     if raw_df.empty:
         logging.info('The dataframe is empty.')
     else:
+    # Convert values of dictionary columns to text
+        dict_columns = ['links', 'estimated_diameter', 'close_approach_data']  # Specify the columns that contain dictionary values
+        for col in dict_columns:
+            raw_df[col] = raw_df[col].apply(json.dumps)
+
         insert_data_into_postgresql(
             ENDPOINT_NAME,
             PORT,
@@ -104,4 +110,4 @@ if __name__ == "__main__":
             raw_df,
             TEMP_SCHEMA_TO_CREATE)
         logging.info(
-            'Done executing inserting the data into "nasa.asteroidsNeows" table\n')
+            'Done executing inserting the data into "nasa_asteroidsneows" table\n')

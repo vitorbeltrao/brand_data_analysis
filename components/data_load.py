@@ -124,9 +124,8 @@ def create_table_into_postgresql(
     cur = conn.cursor()
 
     # Check if the table exists in the schema
-    cur.execute(
-        'SELECT EXISTS(SELECT * FROM information_schema.tables WHERE table_schema = %s AND table_name = %s)',
-        (schema_name, table_name))
+    table_exists_query = f"SELECT EXISTS(SELECT * FROM information_schema.tables WHERE table_schema = '{schema_name}' AND table_name = '{table_name}')"
+    cur.execute(table_exists_query)
     exists = cur.fetchone()[0]
 
     # If the table does not exist, create the table
@@ -241,7 +240,7 @@ def insert_data_into_postgresql(
         logging.info('The dataframe data has been inserted: SUCCESS')
 
     # Remove the temporary table
-    drop_query = f'DROP TABLE {temp_schema_name}.{temp_table_name} CASCADE;'
+    drop_query = f'DROP TABLE {temp_schema_name}.{temp_table_name};'
 
     with conn.cursor() as cur:
         cur.execute(drop_query)
