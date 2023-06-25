@@ -89,11 +89,15 @@ Go to the [AWS](https://aws.amazon.com/) page and create a free account for you 
 
 Go to the [cloud formation](https://aws.amazon.com/cloudformation/) instance on AWS and upload this template so that the database, DMS and S3 services are created to start the pipeline.
 
-After everything is created, including the postgres RDS instance, you must access the database and run this code: `create extension pglogical`
-
 ### main's Files
 
 After all the above steps, you can run it in your terminal (in the order), in your main directory: `python main_load_to_rds.py`, `python main_s3_management.py` and `python main_load_dw.py` to execute the components in order from the *components* folder. This will run all the necessary pipeline (in order) to get the data into the database, then make the necessary transformations inside the data lake, and finally push the transformed data up to a data warehouse.
+
+**Observations:**
+
+1. After executing the first step of the pipeline to upload the data that came from the API to the database, you must access your database where you loaded your tables and execute: `create extension pglogical`. This is only done once.
+
+2. After executing the above code, access your DMS instance through the AWS console, enter the respective created task and click on the *"actions"* button and execute *"restart/resume"* to activate the data migration. This must only be done once.
 
 ### Stremlit app
 
@@ -104,6 +108,16 @@ To run streamlit locally, just run: `streamlit run hello.py` and then a web brow
 To make everything work, you need to create the `.env` file in your main directory, so that *main's* files runs smoothly. 
 
 In the .env, you must define all necessary variables like usernames, passwords and anything else that is sensitive information for your project.
+
+**Here is the list of variables that must be passed:**
+
+* For data collection in the NASA API: key of NASA API.
+
+* For RDS postgres instance: endpoint name, port, database name, user, password, schema name, temporary schema name (you should pass this one with the same name as the main schema, just prefixing it with "temp_"), table name.
+
+* For S3 bucket instance: bucket name, source directory, AWS access key id, AWS secret access secret, region name.
+
+* for DW (same as postgres instance): endpoint name, port, database name, user, password, schema name, temporary schema name, table name.
 
 ### Testing
 
