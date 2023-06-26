@@ -8,6 +8,7 @@ Date: May/2023
 
 # import necessary packages
 import boto3
+import json
 import os
 import logging
 import datetime
@@ -62,15 +63,17 @@ def move_files_to_processed_layer(
     logging.info('Columns have been removed: SUCCESS')
 
     # normalize 'estimated_diameter' column
+    processed_data['estimated_diameter'] = processed_data['estimated_diameter'].apply(json.loads)
     diameter = pd.json_normalize(processed_data['estimated_diameter'])
     diameter = diameter[['kilometers.estimated_diameter_min', 'kilometers.estimated_diameter_max']]
-    close_approach_final.rename(columns = {
+    diameter.rename(columns = {
         'kilometers.estimated_diameter_min':'kilometers_estimated_diameter_min',
         'kilometers.estimated_diameter_max':'kilometers_estimated_diameter_max'}, inplace = True)
     logging.info('Column "estimated_diameter" have been normalized: SUCCESS')
 
     # normalize 'close_approach_data' column
     close_approach_slice_one = pd.DataFrame()
+    processed_data['close_approach_data'] = processed_data['close_approach_data'].apply(json.loads)
 
     for item in processed_data['close_approach_data']:
         df_item = pd.DataFrame(item, index=[0]) # Creates a DataFrame for each list item
@@ -107,7 +110,7 @@ def move_files_to_processed_layer(
         os.makedirs('tmp')
 
     # Save the processed data to Parquet format
-    processed_data.to_parquet(f'tmp/{current_date}_processed_asteroidsNeows.parquet')
+    processed_data_final.to_parquet(f'tmp/{current_date}_processed_asteroidsNeows.parquet')
 
     # Upload the Parquet file to S3
     s3_client.upload_file(f'tmp/{current_date}_processed_asteroidsNeows.parquet', bucket_name, processed_directory)
