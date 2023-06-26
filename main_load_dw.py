@@ -59,14 +59,14 @@ if __name__ == "__main__":
     absolute_magnitude_h FLOAT,
     is_potentially_hazardous_asteroid BOOL,
     is_sentry_object BOOL,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
     kilometers_estimated_diameter_min FLOAT,
     kilometers_estimated_diameter_max FLOAT,
     close_approach_date DATETIME,
     orbiting_body TEXT,
     velocity_kilometers_per_hour FLOAT,
-    distance_kilometers FLOAT,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
+    distance_kilometers FLOAT
     '''
 
     create_table_into_postgresql(

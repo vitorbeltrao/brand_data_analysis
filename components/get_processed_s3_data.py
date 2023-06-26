@@ -7,9 +7,11 @@ Date: June/2023
 
 # import necessary packages
 import boto3
+import io
 import logging
 import datetime
 import pandas as pd
+import pyarrow.parquet as pq
 
 logging.basicConfig(
     level=logging.INFO,
@@ -47,14 +49,14 @@ def get_files_from_processed_layer(
 
     # Create a client instance for S3
     s3_client = session.client('s3')
-
-    # Read the raw data from S3, selecting only desired columns
-    obj = s3_client.get_object(Bucket=bucket_name, Key=processed_directory)
-    processed_data = pd.read_csv(obj['Body'], names=[
-        'id', 'name', 'absolute_magnitude_h', 'is_potentially_hazardous_asteroid',
-        'is_sentry_object', 'kilometers_estimated_diameter_min', 'kilometers_estimated_diameter_max',
-        'close_approach_date', 'orbiting_body', 'velocity_kilometers_per_hour', 'distance_kilometers',
-        'created_at', 'updated_at'])
-    logging.info('The processed data was obtained successfully')
     
+    # Read the Parquet file from S3 using the S3 client
+    response = s3_client.get_object(Bucket=bucket_name, Key=processed_directory)
+    body = response['Body']
+
+    # Read the Parquet data using pyarrow
+    parquet_file = pq.ParquetFile(io.BytesIO(body.read()))
+    processed_data = parquet_file.read().to_pandas()
+    logging.info('The processed data was obtained successfully')
+
     return processed_data

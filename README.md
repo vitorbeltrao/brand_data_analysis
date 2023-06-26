@@ -95,9 +95,11 @@ After all the above steps, you can run it in your terminal (in the order), in yo
 
 **Observations:**
 
-1. After executing the first step of the pipeline to upload the data that came from the API to the database, you must access your database where you loaded your tables and execute: `create extension pglogical`. This is only done once.
+1. After executing the first step of the pipeline (`python main_load_to_rds.py`) to upload the data that came from the API to the database, you must access your database where you loaded your tables and execute: `create extension pglogical`. This is only done once.
 
 2. After executing the above code, access your DMS instance through the AWS console, enter the respective created task and click on the *"actions"* button and execute *"restart/resume"* to activate the data migration. This must only be done once.
+
+3. After completing the previous step, you can run the second pipeline step (`python main_s3_management.py`) and the third step (`python main_load_dw.py`).
 
 ### Stremlit app
 
