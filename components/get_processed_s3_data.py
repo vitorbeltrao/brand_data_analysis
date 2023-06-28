@@ -57,6 +57,5 @@ def get_files_from_processed_layer(
     # Read the Parquet data using pyarrow
     parquet_file = pq.ParquetFile(io.BytesIO(body.read()))
     processed_data = parquet_file.read().to_pandas()
-    logging.info('The processed data was obtained successfully')
 
     return processed_data

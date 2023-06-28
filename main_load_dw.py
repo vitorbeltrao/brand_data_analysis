@@ -52,18 +52,18 @@ if __name__ == "__main__":
     # 3. create tables
     # 3.1 create first table in "nasa_data_dw" schema
     logging.info(
-        'About to start executing the create table "nasa.asteroidsNeows_processed" function')
+        'About to start executing the create table "nasa_asteroidsNeows_processed" function')
     table_columns = '''
     id SERIAL PRIMARY KEY,
     name TEXT,
     absolute_magnitude_h FLOAT,
     is_potentially_hazardous_asteroid BOOL,
     is_sentry_object BOOL,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
+    created_at TEXT,
+    updated_at TEXT,
     kilometers_estimated_diameter_min FLOAT,
     kilometers_estimated_diameter_max FLOAT,
-    close_approach_date DATETIME,
+    close_approach_date TEXT,
     orbiting_body TEXT,
     velocity_kilometers_per_hour FLOAT,
     distance_kilometers FLOAT
@@ -78,11 +78,11 @@ if __name__ == "__main__":
         DW_SCHEMA_TO_CREATE,
         PROCESSED_TABLE_NAME,
         table_columns)
-    logging.info('Done executing the create table "nasa.asteroidsNeows_processed" function\n')
+    logging.info('Done executing the create table "nasa_asteroidsNeows_processed" function\n')
 
     # 4. insert transformed dataframes into postgres
-    # 4.1 insert data into nasa.asteroidsNeows table
-    logging.info('About to start inserting the data into "nasa.asteroidsNeows_processed" table')
+    # 4.1 insert data into nasa_asteroidsNeows_processed table
+    logging.info('About to start inserting the data into "nasa_asteroidsNeows_processed" table')
 
     # loading data
     if processed_data.empty:
@@ -99,4 +99,4 @@ if __name__ == "__main__":
             processed_data,
             DW_TEMP_SCHEMA_TO_CREATE)
         logging.info(
-            'Done executing inserting the data into "nasa.asteroidsNeows_processed" table\n')
+            'Done executing inserting the data into "nasa_asteroidsNeows_processed" table\n')
