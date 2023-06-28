@@ -20,22 +20,22 @@ def load_about():
 
 # Set initial page configurations
 st.set_page_config(
-    page_title='Netflix Tweet Analysis',
-    page_icon='🎬',
+    page_title='NASA Asteroids Analysis',
+    page_icon='🌌',
 )
 
 # Title and image for the app
-st.title('Welcome to the Netflix Tweet Analysis App')
+st.title('Welcome to the NASA Asteroids Analysis App')
 
 # Load and resize the image
-image = Image.open('images/Netflix-Brand-Logo.png')  # Replace with the path to your logo
+image = Image.open('images/nasa-logo-web-rgb.png')  # Replace with the path to your NASA logo
 
 # Display the resized image
 st.image(image, use_column_width=True)
 
 # Brief description of the app
-st.write('This app allows you to analyze the data from tweets posted by Netflix.')
-st.write('You can explore different charts and metrics to gain insights into the tweets.')
+st.write('This app allows you to analyze data from the NASA Asteroids Near Earth Object Web Service (AsteroidsNeoWs).')
+st.write('You can explore different charts and metrics to gain insights into the asteroids data.')
 
 # Load information about the app in the sidebar
 load_about()
