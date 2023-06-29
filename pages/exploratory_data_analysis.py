@@ -36,10 +36,10 @@ st.sidebar.title("Filters")
 
 
 # 2. Get data from dw
-conn_string = f"DRIVER=PostgreSQL ODBC Driver;SERVER={ENDPOINT_NAME};DATABASE={DB_NAME};UID={USER};PWD={PASSWORD};PORT={PORT}"
+conn_string = f"host={ENDPOINT_NAME} port={PORT} dbname={DB_NAME} user={USER} password={PASSWORD}"
 query = '''
     SELECT * FROM nasa_data_dw.nasa_asteroidsneows_processed
-'''
+    '''
 processed_df = fetch_data_from_database(conn_string, query)
 
 # 3. Read the data in strealit

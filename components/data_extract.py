@@ -10,7 +10,7 @@ Date: May/2023
 import requests
 import pandas as pd
 import logging
-import pyodbc
+import psycopg2
 
 logging.basicConfig(
     level=logging.INFO,
@@ -79,11 +79,20 @@ def fetch_data_from_database(conn_string: str, query: str) -> pd.DataFrame:
 
     try:
         # Connect to the database
-        conn = pyodbc.connect(conn_string)
+        conn = psycopg2.connect(conn_string)
 
         # Fetch the data using the query
-        logging.info('Fetching data from the database...')
-        data = pd.read_sql(query, conn)
+        cursor = conn.cursor()
+        cursor.execute(query)
+
+        # Fetch all rows from the result set
+        data = cursor.fetchall()
+
+        # Get column names from the cursor description
+        column_names = [desc[0] for desc in cursor.description]
+
+        # Create a DataFrame from the fetched data
+        df = pd.DataFrame(data, columns=column_names)
 
     except Exception as e:
         logging.error(f'Error fetching data from the database: {str(e)}')
@@ -93,4 +102,4 @@ def fetch_data_from_database(conn_string: str, query: str) -> pd.DataFrame:
         if conn is not None:
             conn.close()
 
-    return data
+    return df
