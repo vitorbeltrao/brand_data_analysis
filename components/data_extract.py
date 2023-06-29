@@ -1,6 +1,6 @@
 '''
 Script to extract data from nasa API
-and read them as pandas dataframe
+and database
 
 Author: Vitor Abdo
 Date: May/2023
@@ -10,6 +10,7 @@ Date: May/2023
 import requests
 import pandas as pd
 import logging
+import pyodbc
 
 logging.basicConfig(
     level=logging.INFO,
@@ -61,3 +62,35 @@ def fetchAsteroidNeowsFeed(api_key: str, start_date: str, end_date: str) -> pd.D
     except requests.exceptions.RequestException as e:
         logging.error("Error during API request: %s", str(e))
         return None
+    
+
+def fetch_data_from_database(conn_string: str, query: str) -> pd.DataFrame:
+    '''
+    Fetches data from a database using the provided connection string and query.
+
+    Parameters:
+        conn_string (str): Connection string for the database.
+        query (str): SQL query to fetch the data.
+
+    Returns:
+        DataFrame: A DataFrame containing the fetched data.
+    '''
+    conn = None  # Definir a variável 'conn' como None
+
+    try:
+        # Connect to the database
+        conn = pyodbc.connect(conn_string)
+
+        # Fetch the data using the query
+        logging.info('Fetching data from the database...')
+        data = pd.read_sql(query, conn)
+
+    except Exception as e:
+        logging.error(f'Error fetching data from the database: {str(e)}')
+        raise
+    finally:
+        # Close the connection if it was successfully established
+        if conn is not None:
+            conn.close()
+
+    return data
