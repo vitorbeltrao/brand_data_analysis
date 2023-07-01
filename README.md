@@ -141,7 +141,7 @@ The data collected from the NASA API and processed through various transformatio
 
 Here's a GIF of the finished report. I did not provide the link to the implemented report, as it depended on the data that was in the AWS database and as it is disabled to avoid costs, the dashboard is also disabled. But the gif perfectly expresses how he is!
 
-![streamlit_app](https://github.com/vitorbeltrao/nasa_data_analysis/blob/main/images/NASA_Asteroids_Analysis_-_Google_Chrome_2023-07-01_15-16-11_AdobeExpress.gif?raw=true)
+![streamlit_app](https://github.com/vitorbeltrao/nasa_data_analysis/blob/main/images/NASA_Asteroids_Analysis_-_Google_Chrome_2023-07-01_15-16-11_AdobeExpress.gif?raw=true | width=100)
 ***
 
 ## Licensing and Author <a name="licensingandauthors"></a>
