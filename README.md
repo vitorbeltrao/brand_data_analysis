@@ -139,7 +139,9 @@ The project uses a modularized approach for data collection, transformation, and
 
 The data collected from the NASA API and processed through various transformations in the pipeline, incorporating different business rules and inputs from employees, will be presented in a dashboard using the Streamlit library. This dashboard will provide an interactive and user-friendly interface to visualize and explore the NASA data. Streamlit is a powerful Python library for building data applications and interactive visualizations, allowing users to gain valuable insights from the collected and curated data.
 
-Here is the link to the dashboard implemented and available to anyone: (in progress...)
+Here's a GIF of the finished report. I did not provide the link to the implemented report, as it depended on the data that was in the AWS database and as it is disabled to avoid costs, the dashboard is also disabled. But the gif perfectly expresses how he is!
+
+![streamlit_app](https://github.com/vitorbeltrao/nasa_data_analysis/blob/main/images/NASA_Asteroids_Analysis_-_Google_Chrome_2023-07-01_15-16-11_AdobeExpress.gif?raw=true)
 ***
 
 ## Licensing and Author <a name="licensingandauthors"></a>
@@ -156,4 +158,4 @@ Reach me at:
 
 - [medium](https://pandascouple.medium.com)
 
-Licensing: [MIT LICENSE](https://github.com/vitorbeltrao/populate_database/blob/main/LICENSE)
+Licensing: [MIT LICENSE](https://github.com/vitorbeltrao/nasa_data_analysis/blob/main/LICENSE)
