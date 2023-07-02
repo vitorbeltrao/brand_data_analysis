@@ -40,7 +40,7 @@ TEMP_SCHEMA_TO_CREATE = config('TEMP_SCHEMA_TO_CREATE')
 TABLE_NAME = config('TABLE_NAME')
 
 
-if __name__ == "__main__":
+def lambda_handler(event, context):
     # 1. create the schema if it does not already exist
     logging.info('About to start executing the create schema function')
     create_schema_into_postgresql(ENDPOINT_NAME, PORT, DB_NAME, USER, PASSWORD, SCHEMA_TO_CREATE) # main schema
