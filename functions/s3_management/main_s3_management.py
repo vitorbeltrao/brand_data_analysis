@@ -21,14 +21,14 @@ logging.basicConfig(
 # config
 BUCKET_NAME = config('BUCKET_NAME')
 SOURCE_DIRECTORY = config('SOURCE_DIRECTORY')
-AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+AWS_ACCESSKEYID = config('AWS_ACCESSKEYID')
+AWS_SECRETACCESSKEY = config('AWS_SECRETACCESSKEY')
 REGION_NAME = config('REGION_NAME')
 
 # Create a session with AWS credentials
 session = boto3.Session(
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    aws_access_key_id=AWS_ACCESSKEYID,
+    aws_secret_access_key=AWS_SECRETACCESSKEY,
     region_name=REGION_NAME
 )
 
@@ -36,7 +36,7 @@ session = boto3.Session(
 s3_client = session.client('s3')
 
 
-if __name__ == "__main__":
+def lambda_handler(event, context):
     # 1. Move data from staging to RAW
     logging.info('About to start moving the data from staging to raw bucket')
     try:
@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
         for file in csv_files:
             move_files_to_raw_layer(
-                BUCKET_NAME, file, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME)
+                BUCKET_NAME, file, AWS_ACCESSKEYID, AWS_SECRETACCESSKEY, REGION_NAME)
     except:
         logging.info('Staging folder is empty')
 
@@ -53,5 +53,5 @@ if __name__ == "__main__":
 
     # 2. Move data from RAW to PROCESSED
     logging.info('About to start moving the data from raw to processed layer')
-    move_files_to_processed_layer(BUCKET_NAME, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME)
+    move_files_to_processed_layer(BUCKET_NAME, AWS_ACCESSKEYID, AWS_SECRETACCESSKEY, REGION_NAME)
     logging.info('Finish moving the data from raw to processed layer\n')

@@ -31,13 +31,12 @@ DW_SCHEMA_TO_CREATE = config('DW_SCHEMA_TO_CREATE')
 DW_TEMP_SCHEMA_TO_CREATE = config('DW_TEMP_SCHEMA_TO_CREATE')
 PROCESSED_TABLE_NAME = config('PROCESSED_TABLE_NAME')
 BUCKET_NAME = config('BUCKET_NAME')
-SOURCE_DIRECTORY = config('SOURCE_DIRECTORY')
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
 REGION_NAME = config('REGION_NAME')
 
 
-if __name__ == "__main__":
+def lambda_handler(event, context):
     # 1. Get the current processed data
     logging.info('About to start getting data from processed layer')
     processed_data = get_files_from_processed_layer(BUCKET_NAME, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME)
