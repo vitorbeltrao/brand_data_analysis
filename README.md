@@ -39,7 +39,7 @@ The entire project is orchestrated by lambdas which will be explained in more de
 
 * `template.yaml`: AWS cloud formation instance template to create RDS, DMS and S3 services, integrating all of them.
 
-* `template_lambdas.yaml`: AWS cloud formation instance template to create the three lambdas needed in AWS to run the project automatically
+* `template_lambdas.yaml`: AWS cloud formation instance template to create the three lambdas needed in AWS to run the project automatically.
 
 * `functions/`: Directory where the executable files of our three lambdas are hosted.
 
@@ -52,15 +52,15 @@ The entire project is orchestrated by lambdas which will be explained in more de
         * `requirements.txt`: File with the necessary dependencies for the block to work.
         * `.env`: File with the environment variables used.
 
-    * `s3_management/`: Block of the project that serves to take the data from the staging layer of S3 (which came through the DMS instance), do some pre-processing and save them in the processed layer of S3
+    * `s3_management/`: Block of the project that serves to take the data from the staging layer of S3 (which came through the DMS instance), do some pre-processing and save them in the processed layer of S3.
         * `components/`: Directory containing the modularized components for the block.
             * `create_s3_raw_folder.py`: Python module to move the data that arrived in the staging bucket from the DMS to the raw layer.
             * `create_s3_processed_folder.py`: Python module to move data from raw layer to processed layer (performing some basic transformations). 
-        * `main_s3_management.py`: Python script to manage all transformations of datalake layers in S3 bucket
+        * `main_s3_management.py`: Python script to manage all transformations of datalake layers in S3 bucket.
         * `requirements.txt`: File with the necessary dependencies for the block to work.
         * `.env`: File with the environment variables used.
 
-    * `load_to_dw/`: Block of the project that serves to obtain the data from the processed layer of S3 and take them to the data warehouse to be consumed by the BI tool, in the case the streamlit was used
+    * `load_to_dw/`: Block of the project that serves to obtain the data from the processed layer of S3 and take them to the data warehouse to be consumed by the BI tool, in the case the streamlit was used.
         * `components/`: Directory containing the modularized components for the block.
             * `get_processed_s3_data.py`: Python module to retrieve the data from the processed layer.
             * `data_load.py`: Python module for loading the transformed data into the PostgreSQL database.
@@ -78,7 +78,6 @@ The entire project is orchestrated by lambdas which will be explained in more de
 
     * `test_collector.py`: Unit tests for the functions of the respective component (data_extract.py).
     * `test_transform.py`: Unit tests for the functions of the respective component (data_transform.py).
-    * `test_load.py`: Unit tests for the functions of the respective component (data_load.py).
     * `conftest.py`: File where the fixtures were created to feed the unit tests.
 ***
 
@@ -143,6 +142,8 @@ In the .env, you must define all necessary variables like usernames, passwords a
     `pytest`
 
     The tests of the functions used are in the `nasa_data_analysis/tests` folder and to run them just write the code above in the terminal. In that folder are the tests that cover the production functions that are in the `nasa_data_analysis/functions/` folder.
+
+    In progress...
 ***
 
 ## Orchestration <a name="orchestration"></a>

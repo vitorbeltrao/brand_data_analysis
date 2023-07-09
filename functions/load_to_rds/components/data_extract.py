@@ -10,7 +10,6 @@ Date: May/2023
 import requests
 import pandas as pd
 import logging
-import psycopg2
 
 logging.basicConfig(
     level=logging.INFO,
@@ -62,44 +61,3 @@ def fetchAsteroidNeowsFeed(api_key: str, start_date: str, end_date: str) -> pd.D
     except requests.exceptions.RequestException as e:
         logging.error("Error during API request: %s", str(e))
         return None
-    
-
-def fetch_data_from_database(conn_string: str, query: str) -> pd.DataFrame:
-    '''
-    Fetches data from a database using the provided connection string and query.
-
-    Parameters:
-        conn_string (str): Connection string for the database.
-        query (str): SQL query to fetch the data.
-
-    Returns:
-        DataFrame: A DataFrame containing the fetched data.
-    '''
-    conn = None  # Definir a variável 'conn' como None
-
-    try:
-        # Connect to the database
-        conn = psycopg2.connect(conn_string)
-
-        # Fetch the data using the query
-        cursor = conn.cursor()
-        cursor.execute(query)
-
-        # Fetch all rows from the result set
-        data = cursor.fetchall()
-
-        # Get column names from the cursor description
-        column_names = [desc[0] for desc in cursor.description]
-
-        # Create a DataFrame from the fetched data
-        df = pd.DataFrame(data, columns=column_names)
-
-    except Exception as e:
-        logging.error(f'Error fetching data from the database: {str(e)}')
-        raise
-    finally:
-        # Close the connection if it was successfully established
-        if conn is not None:
-            conn.close()
-
-    return df
