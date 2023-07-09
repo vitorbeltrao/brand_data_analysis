@@ -13,7 +13,6 @@ import os
 import logging
 import datetime
 import pandas as pd
-import io
 
 logging.basicConfig(
     level=logging.INFO,
@@ -108,20 +107,15 @@ def move_files_to_processed_layer(
 
     logging.info('All dataframes with transformations have been merged: SUCCESS')
     ####################################################################################################
-    # Create the 'tmp' directory if it doesn't exist
+    # # Create the 'tmp' directory if it doesn't exist
     # if not os.path.exists('tmp'):
     #     os.makedirs('tmp')
 
-    # Converta o DataFrame em um arquivo Parquet em memória
-    parquet_buffer = io.BytesIO()
-    processed_data_final.to_parquet(parquet_buffer)
-    parquet_buffer.seek(0)
+    # Save the processed data to Parquet format
+    processed_data_final.to_parquet(f'/tmp/{current_date}_processed_asteroidsNeows.parquet', compression='gzip')
 
-    # Faça o upload do arquivo Parquet diretamente para o S3
-    s3_client.upload_fileobj(parquet_buffer, bucket_name, processed_directory)
-
-    # # Upload the Parquet file to S3
-    # s3_client.upload_file(f'/tmp/{current_date}_processed_asteroidsNeows.parquet', bucket_name, processed_directory)
+    # Upload the Parquet file to S3
+    s3_client.upload_file(f'/tmp/{current_date}_processed_asteroidsNeows.parquet', bucket_name, processed_directory)
 
     # Delete the temporary file
     os.remove(f'/tmp/{current_date}_processed_asteroidsNeows.parquet')
