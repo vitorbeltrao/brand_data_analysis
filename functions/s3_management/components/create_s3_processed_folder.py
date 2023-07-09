@@ -104,6 +104,8 @@ def move_files_to_processed_layer(
     processed_data_final['close_approach_date'] = pd.to_datetime(processed_data_final['close_approach_date'])
     processed_data_final['velocity_kilometers_per_hour'] = processed_data_final['velocity_kilometers_per_hour'].astype(float)
     processed_data_final['distance_kilometers'] = processed_data_final['distance_kilometers'].astype(float)
+    processed_data_final['is_potentially_hazardous_asteroid'] = processed_data_final['is_potentially_hazardous_asteroid'].astype(bool)
+    processed_data_final['is_sentry_object'] = processed_data_final['is_sentry_object'].astype(bool)
 
     logging.info('All dataframes with transformations have been merged: SUCCESS')
     ####################################################################################################

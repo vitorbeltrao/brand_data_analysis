@@ -1,0 +1,115 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Runtime: python3.9
+
+Parameters:
+  NasaApiKey:
+    Type: String
+  EndpointName:
+    Type: String
+  Port:
+    Type: String
+  DbName:
+    Type: String
+  User:
+    Type: String
+  Password:
+    Type: String
+  SchemaToCreate:
+    Type: String
+  TempSchemaToCreate:
+    Type: String
+  TableName:
+    Type: String
+  
+  BucketName:
+    Type: String
+  SourceDirectory:
+    Type: String
+  AwsAccessKeyId:
+    Type: String
+  AwsSecretAccessKey:
+    Type: String
+  RegionName:
+    Type: String
+
+  DwSchemaToCreate:
+    Type: String
+  DwTempSchemaToCreate:
+    Type: String
+  ProcessedTableName:
+    Type: String
+          
+
+# Define the resources to be created
+Resources:
+  LoadToRds:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Makes an API request on a schedule and uploads data to RDS
+      CodeUri: functions/load_to_rds/
+      Handler: main_load_to_rds.lambda_handler
+      Timeout: 60
+      Events:
+        WeeklySchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 0 ? * 1 *) # every monday at 00:00
+            Name: every-monday
+      Environment:
+        Variables:
+          NASA_API_KEY: !Ref NasaApiKey
+          ENDPOINT_NAME: !Ref EndpointName
+          PORT: !Ref Port
+          DB_NAME: !Ref DbName
+          USER: !Ref User
+          PASSWORD: !Ref Password
+          SCHEMA_TO_CREATE: !Ref SchemaToCreate
+          TEMP_SCHEMA_TO_CREATE: !Ref TempSchemaToCreate
+          TABLE_NAME: !Ref TableName
+
+  S3Management:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Gets data from S3 staging layer to process and load to S3 processed layer
+      CodeUri: functions/s3_management/
+      Handler: main_s3_management.lambda_handler
+      Timeout: 60
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref BucketName
+          SOURCE_DIRECTORY: !Ref SourceDirectory
+          AWS_ACCESSKEYID: !Ref AwsAccessKeyId
+          AWS_SECRETACCESSKEY: !Ref AwsSecretAccessKey
+          REGION_NAME: !Ref RegionName
+      
+      # Events:
+      # The event was set manually through the AWS console as SAM doesn't allow trigget events from existing S3 to invoke a lambda function
+
+  LoadToDw:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Gets data from S3 processed layer and uploads it to the DW
+      CodeUri: functions/load_to_dw/
+      Handler: main_load_to_dw.lambda_handler
+      Timeout: 60
+      Environment:
+        Variables:
+          ENDPOINT_NAME: !Ref EndpointName
+          PORT: !Ref Port
+          DB_NAME: !Ref DbName
+          USER: !Ref User
+          PASSWORD: !Ref Password
+          DW_SCHEMA_TO_CREATE: !Ref DwSchemaToCreate
+          DW_TEMP_SCHEMA_TO_CREATE: !Ref DwTempSchemaToCreate
+          PROCESSED_TABLE_NAME: !Ref ProcessedTableName
+          BUCKET_NAME: !Ref BucketName
+          AWS_ACCESSKEYID: !Ref AwsAccessKeyId
+          AWS_SECRETACCESSKEY: !Ref AwsSecretAccessKey
+          REGION_NAME: !Ref RegionName
+
+      # Events:
+      # The event was set manually through the AWS console as SAM doesn't allow trigget events from existing S3 to invoke a lambda function

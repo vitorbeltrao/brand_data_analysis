@@ -31,15 +31,15 @@ DW_SCHEMA_TO_CREATE = config('DW_SCHEMA_TO_CREATE')
 DW_TEMP_SCHEMA_TO_CREATE = config('DW_TEMP_SCHEMA_TO_CREATE')
 PROCESSED_TABLE_NAME = config('PROCESSED_TABLE_NAME')
 BUCKET_NAME = config('BUCKET_NAME')
-AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+AWS_ACCESSKEYID = config('AWS_ACCESSKEYID')
+AWS_SECRETACCESSKEY = config('AWS_SECRETACCESSKEY')
 REGION_NAME = config('REGION_NAME')
 
 
 def lambda_handler(event, context):
     # 1. Get the current processed data
     logging.info('About to start getting data from processed layer')
-    processed_data = get_files_from_processed_layer(BUCKET_NAME, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME)
+    processed_data = get_files_from_processed_layer(BUCKET_NAME, AWS_ACCESSKEYID, AWS_SECRETACCESSKEY, REGION_NAME)
     logging.info('The processed data was obtained successfully\n')
 
      # 2. create the schema if it does not already exist

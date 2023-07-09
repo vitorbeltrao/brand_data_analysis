@@ -11,7 +11,6 @@ import io
 import logging
 import datetime
 import pandas as pd
-import pyarrow.parquet as pq
 
 logging.basicConfig(
     level=logging.INFO,
@@ -54,8 +53,8 @@ def get_files_from_processed_layer(
     response = s3_client.get_object(Bucket=bucket_name, Key=processed_directory)
     body = response['Body']
 
-    # Read the Parquet data using pyarrow
-    parquet_file = pq.ParquetFile(io.BytesIO(body.read()))
-    processed_data = parquet_file.read().to_pandas()
+    # Read the Parquet data using pandas
+    parquet_buffer = io.BytesIO(body.read())
+    processed_data = pd.read_parquet(parquet_buffer)
 
     return processed_data
